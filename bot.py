@@ -24,14 +24,6 @@ from config import (
 FSUB_ENABLED = True  # Force subscription enabled by default
 FSUB_CHANNEL = None  # Dynamic channel ID (set via commands)
 
-ascii_art = """
-██████╗░░█████╗░██╗░░██╗██╗████████╗
-██╔══██╗██╔══██╗██║░██╔╝██║╚══██╔══╝
-██████╦╝██║░░██║█████═╝░██║░░░██║░░░
-██╔══██╗██║░░██║██╔═██╗░██║░░░██║░░░
-██████╦╝╚█████╔╝██║░╚██╗██║░░░██║░░░
-╚═════╝░░╚════╝░╚═╝░░╚═╝╚═╝░░░╚═╝░░░
-"""
 
 class Bot(Client):
     def __init__(self):
