@@ -7,12 +7,13 @@ import logging
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from config import FORCE_SUB_CHANNEL, ADMINS, AUTO_DELETE_TIME, AUTO_DEL_SUCCESS_MSG
-from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.errors import FloodWait
 from config import FSUB_ENABLED, FSUB_CHANNEL  # Ensure FSUB_ENABLED is imported from config
+from pyrogram.errors import UserNotParticipant, RPCError
+from pyrogram.types import ChatMemberStatus
 
 async def is_subscribed(filter, client, update):
-    global FSUB_ENABLED, FSUB_CHANNEL
+    global FSUB_ENABLED, FSUB_CHANNEL, ADMINS
 
     # If Fsub is disabled, allow all users
     if not FSUB_ENABLED:
@@ -25,21 +26,33 @@ async def is_subscribed(filter, client, update):
         return True
 
     try:
-        # Check if the user is a member of the current Fsub channel
+        # Check if the user is a member of the FSUB_CHANNEL
         member = await client.get_chat_member(chat_id=FSUB_CHANNEL, user_id=user_id)
 
         # Return True if the user is a member, admin, or owner
-        return member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]
+        return member.status in [
+            ChatMemberStatus.OWNER,
+            ChatMemberStatus.ADMINISTRATOR,
+            ChatMemberStatus.MEMBER,
+        ]
 
     except UserNotParticipant:
-        # User is not part of the channel
+        # Handle the case where the user is not part of the channel
+        print(f"User {user_id} is not a participant of {FSUB_CHANNEL}.")
         return False
+
+    except RPCError as e:
+        # Handle other Telegram API exceptions
+        print(f"RPC error in is_subscribed filter: {e}")
+        return False
+
     except Exception as e:
+        # Catch any unexpected errors
         print(f"Error in is_subscribed filter: {e}")
         return False
 
+# Register the filter
 subscribed = filters.create(is_subscribed)
-
 
 async def encode(string):
     string_bytes = string.encode("ascii")
