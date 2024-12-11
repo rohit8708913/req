@@ -418,8 +418,11 @@ async def set_fsub_id(client: Client, message: Message):
     try:
         new_id = int(message.command[1])
 
+        # Get bot's user information
+        bot_info = await client.get_me()
+
         # Check if the bot is an admin in the specified channel
-        bot_member = await client.get_chat_member(new_id, client.id)
+        bot_member = await client.get_chat_member(new_id, bot_info.id)
         if bot_member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]:
             await message.reply("The bot is not an admin of this channel. Please make the bot an admin and try again.")
             return
