@@ -69,7 +69,7 @@ FSUB_ENABLED = True  # Change dynamically using commands
 FSUB_CHANNEL = None  # Default value if not set
 
 
-@Bot.on_message(filters.command('start') & filters.subscribed1)
+@Bot.on_message(filters.command('start') & subscribed1)
 async def start_command(client: Client, message: Message):
     global FSUB_CHANNEL, FSUB_ENABLED
 
