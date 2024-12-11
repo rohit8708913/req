@@ -172,7 +172,6 @@ async def start_command(client: Client, message: Message):
 
     # Check if Force Subscription is configured
     if not FSUB_CHANNEL:
-        await message.reply("Force Subscription is not configured. Contact the admin.")
         return
 
     # If FSUB is enabled, check subscription
