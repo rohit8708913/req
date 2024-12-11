@@ -417,10 +417,28 @@ async def set_fsub_id(client: Client, message: Message):
 
     try:
         new_id = int(message.command[1])
+
+        # Check if the bot is an admin in the specified channel
+        bot_member = await client.get_chat_member(new_id, client.id)
+        if bot_member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]:
+            await message.reply("The bot is not an admin of this channel. Please make the bot an admin and try again.")
+            return
+        
+        # Try to get the invite link from the channel to ensure the bot can access it
+        try:
+            invite_link = await client.export_chat_invite_link(new_id)
+        except Exception as e:
+            await message.reply(f"Error: The bot doesn't have permission to get the invite link for this channel. Error: {str(e)}")
+            return
+        
+        # If no exception occurred, update the FSUB_CHANNEL
         FSUB_CHANNEL = new_id
         await message.reply(f"Fsub channel ID has been updated to: {new_id}")
+
     except ValueError:
         await message.reply("Invalid channel ID. Please provide a valid number.")
+    except Exception as e:
+        await message.reply(f"An error occurred: {str(e)}")
 
 @Bot.on_message(filters.command('togglefsub') & filters.user(ADMINS))
 async def toggle_fsub(client: Client, message: Message):
