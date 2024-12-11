@@ -38,6 +38,8 @@ async def is_subscribed(filter, client, update):
         print(f"Error in is_subscribed filter: {e}")
         return False
 
+subscribed = filters.create(is_subscribed)
+
 
 async def encode(string):
     string_bytes = string.encode("ascii")
@@ -130,5 +132,3 @@ async def delete_file(messages, client, process):
 
     await process.edit_text(AUTO_DEL_SUCCESS_MSG)
 
-
-subscribed = filters.create(is_subscribed)
