@@ -165,7 +165,7 @@ async def start_command(client: Client, message: Message):
 
 
 @Bot.on_message(filters.command('start') & filters.private)
-async def start_command(client: Client, message: Message):
+async def not_joined(client: Client, message: Message):
     global FSUB_ENABLED
 
     # If FSUB is disabled, proceed with the welcome message
