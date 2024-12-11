@@ -60,12 +60,24 @@ async def encode(string):
     base64_string = (base64_bytes.decode("ascii")).strip("=")
     return base64_string
 
-async def decode(base64_string):
-    base64_string = base64_string.strip("=") # links generated before this commit will be having = sign, hence striping them to handle padding errors.
-    base64_bytes = (base64_string + "=" * (-len(base64_string) % 4)).encode("ascii")
-    string_bytes = base64.urlsafe_b64decode(base64_bytes) 
-    string = string_bytes.decode("ascii")
-    return string
+
+async def decode(base64_string: str) -> str:
+    try:
+        # Strip any padding characters and normalize the string length
+        base64_string = base64_string.strip("=")
+        padded_string = base64_string + "=" * (-len(base64_string) % 4)
+        
+        # Decode the base64 string
+        base64_bytes = padded_string.encode("ascii")
+        string_bytes = base64.urlsafe_b64decode(base64_bytes)
+        string = string_bytes.decode("ascii")
+
+        return string
+
+    except (base64.binascii.Error, ValueError) as e:
+        # Handle invalid base64 strings
+        print(f"Error decoding base64 string: {e}")
+        return None
 
 async def get_messages(client, message_ids):
     messages = []
