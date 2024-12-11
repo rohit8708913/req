@@ -215,12 +215,13 @@ async def start_command(client: Client, message: Message):
 
     try:
         buttons.append(
-            [
-                InlineKeyboardButton(
-                    text = 'Try Again',
-                    url = f"https://t.me/{client.username}?start={message.command[1]}"
-                )
-            ]
+    [
+        InlineKeyboardButton(
+            text='Try Again',
+            url=f"https://t.me/{client.username}?start={message.command[1]}"
+        )
+    ]
+)
 
         await message.reply(
             FORCE_MSG.format(
