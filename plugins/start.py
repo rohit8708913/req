@@ -222,6 +222,8 @@ async def start_command(client: Client, message: Message):
         )
     ]
 )
+    except IndexError:
+        pass
 
         await message.reply(
             FORCE_MSG.format(
