@@ -12,6 +12,8 @@ from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL
 from helper_func import subscribed,decode, get_messages, delete_file
 from database.database import add_user, del_user, full_userbase, present_user
 
+FSUB_CHANNEL = None  # Default value if not set
+
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
@@ -166,21 +168,26 @@ FSUB_ENABLED = True  # Change dynamically using commands
 
 @Bot.on_message(filters.command('start') & filters.private)
 async def start_command(client: Client, message: Message):
-    global FSUB_ENABLED, FSUB_CHANNEL
+    global FSUB_CHANNEL
 
-    # If Fsub is enabled, check subscription
+    # Check if Force Subscription is configured
+    if not FSUB_CHANNEL:
+        await message.reply("Force Subscription is not configured. Contact the admin.")
+        return
+
+    # If FSUB is enabled, check subscription
     if FSUB_ENABLED:
         try:
             user_id = message.from_user.id
+            # Check user's membership in the channel
             member = await client.get_chat_member(FSUB_CHANNEL, user_id)
             if member.status not in ["member", "administrator", "creator"]:
-                raise Exception("User not subscribed.")
-        except:
-            # Generate invite link
+                raise ValueError("User not subscribed.")
+        except Exception:
+            # Generate invite link based on join request setting
             invite_link = (
                 await client.create_chat_invite_link(
-                    chat_id=FSUB_CHANNEL,
-                    creates_join_request=JOIN_REQUEST_ENABLE
+                    chat_id=FSUB_CHANNEL, creates_join_request=JOIN_REQUEST_ENABLE
                 )
                 if JOIN_REQUEST_ENABLE
                 else await client.export_chat_invite_link(FSUB_CHANNEL)
@@ -191,8 +198,8 @@ async def start_command(client: Client, message: Message):
             ]
             await message.reply(
                 FORCE_MSG.format(
-                    first=message.from_user.first_name,
-                    last=message.from_user.last_name,
+                    first=message.from_user.first_name or "User",
+                    last=message.from_user.last_name or "",
                     username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
                     mention=message.from_user.mention,
                     id=message.from_user.id,
@@ -263,7 +270,6 @@ async def set_fsub_id(client: Client, message: Message):
         return
 
     try:
-        # Update the channel ID
         new_id = int(message.command[1])
         FSUB_CHANNEL = new_id
         await message.reply(f"Fsub channel ID has been updated to: {new_id}")
