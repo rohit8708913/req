@@ -3,7 +3,7 @@ from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait
-from config import FORCE_MSG, START_MSG, FSUB_CHANNEL, JOIN_REQUEST_ENABLE, FORCE_SUB_CHANNEL
+from config import FORCE_MSG, START_MSG, FSUB_CHANNEL, JOIN_REQUEST_ENABLE, FORCE_SUB_CHANNEL, ADMINS
 from helper_func import get_messages, decode, delete_file
 from bot import Bot
 
