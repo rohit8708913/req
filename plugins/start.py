@@ -163,6 +163,14 @@ async def start_command(client: Client, message: Message):
 
 ###################################################
 
+reply_markup = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton("😊 About Me", callback_data = "about"),
+                    InlineKeyboardButton("🔒 Close", callback_data = "close")
+                ]
+            ]
+        )
 
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
@@ -177,8 +185,10 @@ async def not_joined(client: Client, message: Message):
                 username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
                 mention=message.from_user.mention,
                 id=message.from_user.id,
+            ),
+                reply_markup=reply_markup,
+                quote=True
             )
-        )
         return
 
     # If FSUB is enabled, check subscription
