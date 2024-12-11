@@ -33,6 +33,10 @@ DB_NAME = os.environ.get("DATABASE_NAME", "filesharexbot")
 FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "0"))
 JOIN_REQUEST_ENABLE = os.environ.get("JOIN_REQUEST_ENABLED", None)
 
+# Define initial FSUB status (enabled by default)
+FSUB_ENABLED = True  # Change dynamically using commands
+FSUB_CHANNEL = None  # Default value if not set
+
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 
 #start message
