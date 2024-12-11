@@ -110,7 +110,7 @@ async def start_command(client: Client, message: Message):
             if track_msgs:
                 delete_data = await client.send_message(
                     chat_id=message.from_user.id,
-                    text="Your files will be deleted in {AUTO_DELETE_TIME} seconds"
+                    text=f"Your files will be deleted in {AUTO_DELETE_TIME} seconds"
                 )
                 # Schedule the file deletion task after all messages have been copied
                 asyncio.create_task(delete_file(track_msgs, client, delete_data))
