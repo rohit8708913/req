@@ -206,9 +206,22 @@ async def start_command(client: Client, message: Message):
             else await client.export_chat_invite_link(FSUB_CHANNEL)
         )
         buttons = [
-            [InlineKeyboardButton("Join Channel", url=invite_link)],
-            [InlineKeyboardButton("Try Again", url=f"https://t.me/{client.username}?start=start")]
+        [
+            InlineKeyboardButton(
+                "Join Channel",
+                url = ButtonUrl)
         ]
+    ]
+
+    try:
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    text = 'Try Again',
+                    url = f"https://t.me/{client.username}?start={message.command[1]}"
+                )
+            ]
+
         await message.reply(
             FORCE_MSG.format(
                 first=message.from_user.first_name or "User",
