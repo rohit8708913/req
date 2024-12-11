@@ -73,7 +73,6 @@ class Bot(Client):
 
         self.set_parse_mode(ParseMode.HTML)
         self.LOGGER(__name__).info(f"Bot Running..!\n\nCreated by \nhttps://t.me/rohit_1888")
-        print(ascii_art)
         print("Welcome to Bot Modified by Rohit")
         self.username = usr_bot_me.username
 
