@@ -13,10 +13,20 @@ from database.database import add_user, del_user, full_userbase, present_user
 
 # Check if the user is subscribed to the FSUB_CHANNEL
 async def is_user_subscribed(client: Client, user_id: int) -> bool:
+    """
+    Check if a user is subscribed to a specified FSUB_CHANNEL.
+    """
+    global FSUB_CHANNEL
+
+    # Ensure FSUB_CHANNEL is set
+    if not FSUB_CHANNEL:
+        print("FSUB_CHANNEL is not set.")
+        return False
+
     try:
-        # Check if the user is a member of the FSUB_CHANNEL
+        # Get user's membership status in the channel
         user = await client.get_chat_member(FSUB_CHANNEL, user_id)
-        if user.status in ['member', 'administrator', 'creator']:
+        if user.status in [ChatMemberStatus.MEMBER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
             return True
     except Exception as e:
         print(f"Error checking subscription: {e}")
