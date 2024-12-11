@@ -209,7 +209,7 @@ async def start_command(client: Client, message: Message):
         [
             InlineKeyboardButton(
                 "Join Channel",
-                url = ButtonUrl)
+                url = client.invitelink(FSUB_CHANNEL))
         ]
     ]
 
