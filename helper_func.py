@@ -10,7 +10,7 @@ from config import FORCE_SUB_CHANNEL, ADMINS, AUTO_DELETE_TIME, AUTO_DEL_SUCCESS
 from pyrogram.errors import FloodWait
 from config import FSUB_ENABLED, FSUB_CHANNEL  # Ensure FSUB_ENABLED is imported from config
 from pyrogram.errors import UserNotParticipant, RPCError
-from pyrogram.types import ChatMemberStatus
+
 
 async def is_subscribed(filter, client, update):
     global FSUB_ENABLED, FSUB_CHANNEL, ADMINS
