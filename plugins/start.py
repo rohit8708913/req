@@ -161,37 +161,48 @@ REPLY_ERROR = """<code>Use this command as a replay to any telegram message with
 #=====================================================================================##
 
 
+# Define initial Fsub status (enabled by default)
+FSUB_ENABLED = True  # Change dynamically using commands
+
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
+    global FSUB_ENABLED
 
-    if bool(JOIN_REQUEST_ENABLE):
-        invite = await client.create_chat_invite_link(
-            chat_id=FORCE_SUB_CHANNEL,
-            creates_join_request=True
-        )
-        ButtonUrl = invite.invite_link
-    else:
-        ButtonUrl = client.invitelink
+    if FSUB_ENABLED:
+        try:
+            # Check if the user is a member of the channel
+            user_id = message.from_user.id
+            member = await client.get_chat_member(FSUB_CHANNEL, user_id)
+            if member.status not in ["member", "administrator", "creator"]:
+                # User is not subscribed
+                if bool(JOIN_REQUEST_ENABLE):
+                    invite = await client.create_chat_invite_link(
+                        chat_id=FSUB_CHANNEL,
+                        creates_join_request=True
+                    )
+                    ButtonUrl = invite.invite_link
+                else:
+                    ButtonUrl = await client.export_chat_invite_link(FSUB_CHANNEL)
 
-    buttons = [
-        [
-            InlineKeyboardButton(
-                "Join Channel",
-                url = ButtonUrl)
-        ]
-    ]
-
-    try:
-        buttons.append(
-            [
-                InlineKeyboardButton(
-                    text = 'Try Again',
-                    url = f"https://t.me/{client.username}?start={message.command[1]}"
-                )
-            ]
-        )
-    except IndexError:
-        pass
+                buttons = [
+                    [
+                        InlineKeyboardButton(
+                            "Join Channel",
+                            url=ButtonUrl
+                        )
+                    ]
+                ]
+                try:
+                    buttons.append(
+                        [
+                            InlineKeyboardButton(
+                                text='Try Again',
+                                url=f"https://t.me/{client.username}?start={message.command[1]}"
+                            )
+                        ]
+                    )
+                except IndexError:
+                    pass
 
     await message.reply(
         text = FORCE_MSG.format(
@@ -258,3 +269,27 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         await asyncio.sleep(8)
         await msg.delete()
 
+@Bot.on_message(filters.command('setfsubid') & filters.user(ADMINS))
+async def set_fsub_id(client: Client, message: Message):
+    global FSUB_CHANNEL
+
+    if len(message.command) != 2:
+        await message.reply("Usage: /setfsubid <channel_id>")
+        return
+
+    try:
+        # Update the channel ID
+        new_id = int(message.command[1])
+        FSUB_CHANNEL = new_id
+        await message.reply(f"Fsub channel ID has been updated to: {new_id}")
+    except ValueError:
+        await message.reply("Invalid channel ID. Please provide a valid number.")
+
+@Bot.on_message(filters.command('togglefsub') & filters.user(ADMINS))
+async def toggle_fsub(client: Client, message: Message):
+    global FSUB_ENABLED
+
+    # Toggle the Fsub state
+    FSUB_ENABLED = not FSUB_ENABLED
+    status = "enabled" if FSUB_ENABLED else "disabled"
+    await message.reply(f"Fsub has been {status}.")
