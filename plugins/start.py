@@ -172,9 +172,13 @@ async def not_joined(client: Client, message: Message):
         try:
             # Check if the user is a member of the channel
             user_id = message.from_user.id
-            member = await client.get_chat_member(FSUB_CHANNEL, user_id)
-            if member.status not in ["member", "administrator", "creator"]:
-                # User is not subscribed
+            member = await client.get_chat_member(chat_id = FSUB_CHANNEL, user_id = user_id)
+    except UserNotParticipant:
+        return False
+            if not member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
+        return False
+    else:
+        return True
                 if bool(JOIN_REQUEST_ENABLE):
                     invite = await client.create_chat_invite_link(
                         chat_id=FSUB_CHANNEL,
@@ -293,3 +297,14 @@ async def toggle_fsub(client: Client, message: Message):
     FSUB_ENABLED = not FSUB_ENABLED
     status = "enabled" if FSUB_ENABLED else "disabled"
     await message.reply(f"Fsub has been {status}.")
+
+async def is_subscribed(filter, client, update):
+    if not FORCE_SUB_CHANNEL:
+        return True
+    user_id = update.from_user.id
+    if user_id in ADMINS:
+        return True
+    try:
+        
+
+    
