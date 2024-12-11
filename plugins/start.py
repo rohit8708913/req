@@ -178,153 +178,140 @@ FSUB_CHANNEL = None  # Default value if not set
 
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
-    global FSUB_ENABLED
+    global FSUB_ENABLED, FSUB_CHANNEL
+
+    user_id = message.from_user.id
 
     # If FSUB is disabled or user is subscribed, proceed with the normal start behavior
-    user_id = message.from_user.id
     if not FSUB_CHANNEL or await is_user_subscribed(client, user_id):
         # Send the normal start message as per base logic
-            id = message.from_user.id
-    if not await present_user(id):
-        try:
-            await add_user(id)
-        except:
-            pass
-    text = message.text
-    if len(text)>7:
-        try:
-            base64_string = text.split(" ", 1)[1]
-        except:
-            return
-        string = await decode(base64_string)
-        argument = string.split("-")
-        if len(argument) == 3:
+        if not await present_user(user_id):
             try:
-                start = int(int(argument[1]) / abs(client.db_channel.id))
-                end = int(int(argument[2]) / abs(client.db_channel.id))
+                await add_user(user_id)
+            except:
+                pass
+        
+        # Process the start command text
+        text = message.text
+        if len(text) > 7:
+            try:
+                base64_string = text.split(" ", 1)[1]
             except:
                 return
-            if start <= end:
-                ids = range(start,end+1)
-            else:
-                ids = []
-                i = start
-                while True:
-                    ids.append(i)
-                    i -= 1
-                    if i < end:
-                        break
-        elif len(argument) == 2:
+            string = await decode(base64_string)
+            argument = string.split("-")
+            if len(argument) == 3:
+                try:
+                    start = int(int(argument[1]) / abs(client.db_channel.id))
+                    end = int(int(argument[2]) / abs(client.db_channel.id))
+                except:
+                    return
+                if start <= end:
+                    ids = range(start, end + 1)
+                else:
+                    ids = []
+                    i = start
+                    while True:
+                        ids.append(i)
+                        i -= 1
+                        if i < end:
+                            break
+            elif len(argument) == 2:
+                try:
+                    ids = [int(int(argument[1]) / abs(client.db_channel.id))]
+                except:
+                    return
+            temp_msg = await message.reply("Please wait...")
             try:
-                ids = [int(int(argument[1]) / abs(client.db_channel.id))]
+                messages = await get_messages(client, ids)
             except:
+                await message.reply_text("Something went wrong..!")
                 return
-        temp_msg = await message.reply("Please wait...")
-        try:
-            messages = await get_messages(client, ids)
-        except:
-            await message.reply_text("Something went wrong..!")
-            return
-        await temp_msg.delete()
+            await temp_msg.delete()
 
-        track_msgs = []
-
-        for msg in messages:
-
-            if bool(CUSTOM_CAPTION) & bool(msg.document):
-                caption = CUSTOM_CAPTION.format(previouscaption = "" if not msg.caption else msg.caption.html, filename = msg.document.file_name)
-            else:
+            track_msgs = []
+            for msg in messages:
                 caption = "" if not msg.caption else msg.caption.html
-
-            if DISABLE_CHANNEL_BUTTON:
-                reply_markup = msg.reply_markup
-            else:
                 reply_markup = None
 
-            if AUTO_DELETE_TIME and AUTO_DELETE_TIME > 0:
+                if bool(CUSTOM_CAPTION) & bool(msg.document):
+                    caption = CUSTOM_CAPTION.format(previouscaption="" if not msg.caption else msg.caption.html, filename=msg.document.file_name)
 
-                try:
-                    copied_msg_for_deletion = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                    if copied_msg_for_deletion:
-                        track_msgs.append(copied_msg_for_deletion)
-                    else:
-                        print("Failed to copy message, skipping.")
+                if DISABLE_CHANNEL_BUTTON:
+                    reply_markup = msg.reply_markup
 
-                except FloodWait as e:
-                    await asyncio.sleep(e.value)
-                    copied_msg_for_deletion = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                    if copied_msg_for_deletion:
-                        track_msgs.append(copied_msg_for_deletion)
-                    else:
-                        print("Failed to copy message after retry, skipping.")
+                # Handle file copy with auto-delete logic
+                if AUTO_DELETE_TIME and AUTO_DELETE_TIME > 0:
+                    try:
+                        copied_msg_for_deletion = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                        if copied_msg_for_deletion:
+                            track_msgs.append(copied_msg_for_deletion)
+                    except FloodWait as e:
+                        await asyncio.sleep(e.value)
+                        copied_msg_for_deletion = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                        if copied_msg_for_deletion:
+                            track_msgs.append(copied_msg_for_deletion)
+                else:
+                    try:
+                        await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                    except FloodWait as e:
+                        await asyncio.sleep(e.value)
+                        await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
 
-                except Exception as e:
-                    print(f"Error copying message: {e}")
-                    pass
-
+            if track_msgs:
+                delete_data = await client.send_message(
+                    chat_id=message.from_user.id,
+                    text=AUTO_DELETE_MSG.format(time=AUTO_DELETE_TIME)
+                )
+                # Schedule the file deletion task after all messages have been copied
+                asyncio.create_task(delete_file(track_msgs, client, delete_data))
             else:
-                try:
-                    await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                    await asyncio.sleep(0.5)
-                except FloodWait as e:
-                    await asyncio.sleep(e.value)
-                    await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                except:
-                    pass
+                print("No messages to track for deletion.")
 
-        if track_msgs:
-            delete_data = await client.send_message(
-                chat_id=message.from_user.id,
-                text=AUTO_DELETE_MSG.format(time=AUTO_DELETE_TIME)
-            )
-            # Schedule the file deletion task after all messages have been copied
-            asyncio.create_task(delete_file(track_msgs, client, delete_data))
+            return
         else:
-            print("No messages to track for deletion.")
-
-        return
-    else:
-        reply_markup = InlineKeyboardMarkup(
-            [
+            # Reply with the 'About Me' and 'Close' button
+            reply_markup = InlineKeyboardMarkup(
                 [
-                    InlineKeyboardButton("😊 About Me", callback_data = "about"),
-                    InlineKeyboardButton("🔒 Close", callback_data = "close")
+                    [
+                        InlineKeyboardButton("😊 About Me", callback_data="about"),
+                        InlineKeyboardButton("🔒 Close", callback_data="close")
+                    ]
                 ]
-            ]
-        )
-        if START_PIC:  # Check if START_PIC has a value
-            await message.reply_photo(
-                photo=START_PIC,
-                caption=START_MSG.format(
-                    first=message.from_user.first_name,
-                    last=message.from_user.last_name,
-                    username=None if not message.from_user.username else '@' + message.from_user.username,
-                    mention=message.from_user.mention,
-                    id=message.from_user.id
-                ),
-                reply_markup=reply_markup,
-                quote=True
             )
-        else:  # If START_PIC is empty, send only the text
-            await message.reply_text(
-                text=START_MSG.format(
-                    first=message.from_user.first_name,
-                    last=message.from_user.last_name,
-                    username=None if not message.from_user.username else '@' + message.from_user.username,
-                    mention=message.from_user.mention,
-                    id=message.from_user.id
-                ),
-                reply_markup=reply_markup,
-                disable_web_page_preview=True,
-                quote=True
-            )
-        return
+            if START_PIC:  # Check if START_PIC has a value
+                await message.reply_photo(
+                    photo=START_PIC,
+                    caption=START_MSG.format(
+                        first=message.from_user.first_name,
+                        last=message.from_user.last_name,
+                        username=None if not message.from_user.username else '@' + message.from_user.username,
+                        mention=message.from_user.mention,
+                        id=message.from_user.id
+                    ),
+                    reply_markup=reply_markup,
+                    quote=True
+                )
+            else:  # If START_PIC is empty, send only the text
+                await message.reply_text(
+                    text=START_MSG.format(
+                        first=message.from_user.first_name,
+                        last=message.from_user.last_name,
+                        username=None if not message.from_user.username else '@' + message.from_user.username,
+                        mention=message.from_user.mention,
+                        id=message.from_user.id
+                    ),
+                    reply_markup=reply_markup,
+                    disable_web_page_preview=True,
+                    quote=True
+                )
+            return
 
-    # If FSUB is enabled and user is not subscribed, send the Force Subscription message
+    # If FSUB is enabled and the user is not subscribed, send the Force Subscription message
     try:
-        # Get user's membership status
+        # Check user's subscription status
         member = await client.get_chat_member(FSUB_CHANNEL, user_id)
-        
+
         if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
             # User is not subscribed, send Force Subscription message
             invite_link = (
@@ -368,7 +355,6 @@ async def not_joined(client: Client, message: Message):
             return
     except Exception as e:
         print(f"Error while checking membership: {e}")
-
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
     msg = await client.send_message(chat_id=message.chat.id, text=WAIT_MSG)
