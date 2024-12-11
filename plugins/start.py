@@ -182,7 +182,7 @@ async def start_command(client: Client, message: Message):
             member = await client.get_chat_member(FSUB_CHANNEL, user_id)
             
             # Valid member statuses
-            if member.status in ["member", "administrator", "creator"]:
+            if member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
                 # User is subscribed, proceed with welcome message
                 await message.reply(
                     START_MSG.format(
