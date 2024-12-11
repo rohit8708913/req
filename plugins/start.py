@@ -9,6 +9,7 @@ from bot import Bot
 
 # Define initial FSUB status (enabled by default)
 FSUB_ENABLED = True  # Change dynamically using commands
+FSUB_CHANNEL = None  # Default value if not set
 
 
 # Check if the user is subscribed to the FSUB_CHANNEL
