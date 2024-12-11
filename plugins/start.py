@@ -306,3 +306,21 @@ async def toggle_fsub(client: Client, message: Message):
     FSUB_ENABLED = not FSUB_ENABLED
     status = "enabled" if FSUB_ENABLED else "disabled"
     await message.reply(f"Fsub has been {status}.")
+
+@Bot.on_message(filters.command('fsubstatus') & filters.user(ADMINS))
+async def fsub_status(client: Client, message: Message):
+    global FSUB_ENABLED
+    global FSUB_CHANNEL
+
+    status = "enabled" if FSUB_ENABLED else "disabled"
+    if FSUB_ENABLED and FSUB_CHANNEL:
+        channel_info = f"Channel ID: `{FSUB_CHANNEL}`"
+    else:
+        channel_info = "No channel set."
+
+    await message.reply_text(
+        f"**Force Subscription Status:**\n\n"
+        f"**Status:** {status.capitalize()}\n"
+        f"{channel_info}",
+        parse_mode=ParseMode.MARKDOWN
+    )
