@@ -72,9 +72,9 @@ class Bot(Client):
             sys.exit()
 
         self.set_parse_mode(ParseMode.HTML)
-        self.LOGGER(__name__).info(f"Bot Running..!\n\nCreated by \nhttps://t.me/CodeXBotz")
+        self.LOGGER(__name__).info(f"Bot Running..!\n\nCreated by \nhttps://t.me/rohit_1888")
         print(ascii_art)
-        print("Welcome to CodeXBotz File Sharing Bot")
+        print("Welcome to Bot Modified by Rohit")
         self.username = usr_bot_me.username
 
         # Web server setup
@@ -97,7 +97,7 @@ async def toggle_fsub(client: Client, message: Message):
     await message.reply(f"Force subscription has been {status}.")
 
 
-@Bot.on_message(filters.command("setfsubid") & filters.user(ADMINS))
+@Bot.on_message(filters.command('setfsubid') & filters.user(ADMINS))
 async def set_fsub_id(client: Client, message: Message):
     global FSUB_CHANNEL
 
@@ -106,7 +106,29 @@ async def set_fsub_id(client: Client, message: Message):
         return
 
     try:
-        FSUB_CHANNEL = int(message.command[1])
-        await message.reply(f"Fsub channel ID updated to: {FSUB_CHANNEL}")
+        new_id = int(message.command[1])
+
+        # Get bot's user information
+        bot_info = await client.get_me()
+
+        # Check if the bot is an admin in the specified channel
+        bot_member = await client.get_chat_member(new_id, bot_info.id)
+        if bot_member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]:
+            await message.reply("The bot is not an admin of this channel. Please make the bot an admin and try again.")
+            return
+
+        # Try to get the invite link from the channel to ensure the bot can access it
+        try:
+            invite_link = await client.export_chat_invite_link(new_id)
+        except Exception as e:
+            await message.reply(f"Error: The bot doesn't have permission to get the invite link for this channel. Error: {str(e)}")
+            return
+
+        # If no exception occurred, update the FSUB_CHANNEL
+        FSUB_CHANNEL = new_id
+        await message.reply(f"Fsub channel ID has been updated to: {new_id}")
+
     except ValueError:
         await message.reply("Invalid channel ID. Please provide a valid number.")
+    except Exception as e:
+        await message.reply(f"An error occurred: {str(e)}")
