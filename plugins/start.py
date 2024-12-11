@@ -182,7 +182,7 @@ async def not_joined(client: Client, message: Message):
 
     # If FSUB is disabled or user is subscribed, proceed with the normal start behavior
     user_id = message.from_user.id
-    if not FSUB_ENABLED or await is_user_subscribed(client, user_id):
+    if not FSUB_CHANNEL or await is_user_subscribed(client, user_id):
         # Send the normal start message as per base logic
         reply_markup = InlineKeyboardMarkup(
             [
