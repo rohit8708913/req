@@ -10,27 +10,47 @@ from bot import Bot
 from config import *
 from helper_func import *
 from database.database import add_user, del_user, full_userbase, present_user
+from pyrogram.errors import UserNotParticipant, RPCError
 
 # Check if the user is subscribed to the FSUB_CHANNEL
 async def is_user_subscribed(client: Client, user_id: int) -> bool:
-    """
-    Check if a user is subscribed to a specified FSUB_CHANNEL.
-    """
-    global FSUB_CHANNEL
+    global FSUB_ENABLED, FSUB_CHANNEL
 
-    # Ensure FSUB_CHANNEL is set
-    if not FSUB_CHANNEL:
-        print("FSUB_CHANNEL is not set.")
+    # Check if Fsub is enabled
+    if not FSUB_ENABLED:
+        return True
+
+    # Validate user_id
+    if not isinstance(user_id, int) or user_id <= 0:
+        print(f"Invalid user_id: {user_id}")
         return False
 
     try:
-        # Get user's membership status in the channel
-        user = await client.get_chat_member(FSUB_CHANNEL, user_id)
-        if user.status in [ChatMemberStatus.MEMBER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
-            return True
+        # Check if the user is a member of the FSUB_CHANNEL
+        member = await client.get_chat_member(chat_id=FSUB_CHANNEL, user_id=user_id)
+
+        # Return True if the user is a member, admin, or owner
+        return member.status in [
+            ChatMemberStatus.OWNER,
+            ChatMemberStatus.ADMINISTRATOR,
+            ChatMemberStatus.MEMBER,
+        ]
+
+    except UserNotParticipant:
+        # User is not a member of the channel
+        print(f"User {user_id} is not subscribed to {FSUB_CHANNEL}.")
+        return False
+
+    except RPCError as e:
+        # Handle other Telegram API exceptions
+        print(f"RPC error in is_user_subscribed: {e}")
+        return False
+
     except Exception as e:
-        print(f"Error checking subscription: {e}")
-    return False
+        # Catch any unexpected errors
+        print(f"Unexpected error in is_user_subscribed: {e}")
+        return False
+
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
