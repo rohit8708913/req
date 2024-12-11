@@ -11,6 +11,36 @@ from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.errors import FloodWait
 
 
+async def is_subscribed(filter, client, update):
+    global FSUB_ENABLED, FSUB_CHANNEL
+
+    # If Fsub is disabled, allow all users
+    if not FSUB_ENABLED:
+        return True
+
+    user_id = update.from_user.id
+
+    # Admins bypass the Fsub check
+    if user_id in ADMINS:
+        return True
+
+    try:
+        # Check if the user is a member of the current Fsub channel
+        member = await client.get_chat_member(chat_id=FSUB_CHANNEL, user_id=user_id)
+
+        # Return True if the user is a member, admin, or owner
+        return member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]
+
+    except UserNotParticipant:
+        # User is not part of the channel
+        return False
+    except Exception as e:
+        print(f"Error in is_subscribed filter: {e}")
+        return False
+
+
+# Define the filter for use in handlers
+subscribed = create(is_subscribed)
 async def encode(string):
     string_bytes = string.encode("ascii")
     base64_bytes = base64.urlsafe_b64encode(string_bytes)
