@@ -170,84 +170,80 @@ FSUB_ENABLED = True  # Change dynamically using commands
 async def start_command(client: Client, message: Message):
     global FSUB_CHANNEL
 
-    # Check if Force Subscription is configured
-    if not FSUB_CHANNEL:
-        return
-
-    # If FSUB is enabled, check subscription
-    if FSUB_ENABLED:
-        user_id = message.from_user.id
-        try:
-            # Get user's membership status
-            member = await client.get_chat_member(FSUB_CHANNEL, user_id)
-            
-            # Valid member statuses
-            if member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-                # User is subscribed, proceed with welcome message
-                await message.reply(
-                    START_MSG.format(
-                        first=message.from_user.first_name or "User",
-                        last=message.from_user.last_name or "",
-                        username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
-                        mention=message.from_user.mention,
-                        id=message.from_user.id,
-                    )
-                )
-                return
-        except Exception as e:
-            print(f"Error while checking membership: {e}")
-
-        # If user is not subscribed, send Force Subscription message
-        invite_link = (
-            await client.create_chat_invite_link(
-                chat_id=FSUB_CHANNEL, creates_join_request=JOIN_REQUEST_ENABLE
-            )
-            if JOIN_REQUEST_ENABLE
-            else await client.export_chat_invite_link(FSUB_CHANNEL)
-        )
-        buttons = [
-        [
-            InlineKeyboardButton(
-                "Join Channel",
-                url = client.invitelink(FSUB_CHANNEL))
-        ]
-    ]
-
-    try:
-        buttons.append(
-    [
-        InlineKeyboardButton(
-            text='Try Again',
-            url=f"https://t.me/{client.username}?start={message.command[1]}"
-        )
-    ]
-)
-    except IndexError:
-        pass
-
+    # If FSUB is disabled, proceed with the welcome message
+    if not FSUB_ENABLED or not FSUB_CHANNEL:
         await message.reply(
-            FORCE_MSG.format(
+            START_MSG.format(
                 first=message.from_user.first_name or "User",
                 last=message.from_user.last_name or "",
                 username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
                 mention=message.from_user.mention,
                 id=message.from_user.id,
-            ),
-            reply_markup=InlineKeyboardMarkup(buttons),
+            )
         )
         return
 
-    # If FSUB is disabled, proceed with the welcome message
+    # If FSUB is enabled, check subscription
+    user_id = message.from_user.id
+    try:
+        # Get user's membership status
+        member = await client.get_chat_member(FSUB_CHANNEL, user_id)
+
+        # Valid member statuses
+        if member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
+            # User is subscribed, proceed with welcome message
+            await message.reply(
+                START_MSG.format(
+                    first=message.from_user.first_name or "User",
+                    last=message.from_user.last_name or "",
+                    username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
+                    mention=message.from_user.mention,
+                    id=message.from_user.id,
+                )
+            )
+            return
+    except Exception as e:
+        print(f"Error while checking membership: {e}")
+
+    # If user is not subscribed, send Force Subscription message
+    invite_link = (
+        await client.create_chat_invite_link(
+            chat_id=FSUB_CHANNEL, creates_join_request=JOIN_REQUEST_ENABLE
+        )
+        if JOIN_REQUEST_ENABLE
+        else await client.export_chat_invite_link(FSUB_CHANNEL)
+    )
+    buttons = [
+        [
+            InlineKeyboardButton(
+                "Join Channel",
+                url=invite_link
+            )
+        ]
+    ]
+
+    try:
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    text='Try Again',
+                    url=f"https://t.me/{client.username}?start={message.command[1]}"
+                )
+            ]
+        )
+    except IndexError:
+        pass
+
     await message.reply(
-        START_MSG.format(
+        FORCE_MSG.format(
             first=message.from_user.first_name or "User",
             last=message.from_user.last_name or "",
             username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
             mention=message.from_user.mention,
             id=message.from_user.id,
-        )
+        ),
+        reply_markup=InlineKeyboardMarkup(buttons),
     )
-
 
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
