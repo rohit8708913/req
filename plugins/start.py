@@ -485,32 +485,29 @@ async def set_fsub_id(client: Client, message: Message):
     except Exception as e:
         await message.reply(f"An error occurred: {str(e)}")
 #=====================================================================================##
-@Bot.on_message(filters.command('togglefsub') & filters.user(ADMINS))
-async def toggle_fsub(client: Client, message: Message):
-    global FSUB_ENABLED
-
-    # Toggle the Fsub state
-    FSUB_ENABLED = not FSUB_ENABLED
-    status = "enabled" if FSUB_ENABLED else "disabled"
-    await message.reply(f"Fsub has been {status}.")
 
 @Bot.on_message(filters.command('fsubstatus') & filters.user(ADMINS))
 async def fsub_status(client: Client, message: Message):
-    global FSUB_ENABLED
-    global FSUB_CHANNEL1
-    global FSUB_CHANNEL2
-    global FSUB_CHANNEL3
-    global FSUB_CHANNEL4
+    global FSUB_ENABLED, FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
 
-    status = "enabled" if FSUB_ENABLED else "disabled"
-    if FSUB_ENABLED and FSUB_CHANNEL:
-        channel_info = f"Channel ID: `{FSUB_CHANNEL}`"
-    else:
-        channel_info = "No channel set."
+    # Determine the status for each channel
+    channels = {
+        "Channel 1": FSUB_CHANNEL1,
+        "Channel 2": FSUB_CHANNEL2,
+        "Channel 3": FSUB_CHANNEL3,
+        "Channel 4": FSUB_CHANNEL4,
+    }
 
+    # Build the status message
+    status_message = f"**Force Subscription Status:**\n\n**Global Status:** {'Enabled' if FSUB_ENABLED else 'Disabled'}\n\n"
+    for channel_name, channel_id in channels.items():
+        if channel_id:
+            status_message += f"**{channel_name}:** Enabled\nChannel ID: `{channel_id}`\n"
+        else:
+            status_message += f"**{channel_name}:** Disabled\n"
+
+    # Send the status message
     await message.reply_text(
-        f"**Force Subscription Status:**\n\n"
-        f"**Status:** {status.capitalize()}\n"
-        f"{channel_info}",
+        status_message,
         parse_mode=ParseMode.MARKDOWN
     )
