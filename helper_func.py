@@ -8,10 +8,49 @@ from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from config import ADMINS, AUTO_DELETE_TIME, AUTO_DEL_SUCCESS_MSG
 from pyrogram.errors import FloodWait
-from config import FSUB_ENABLED, FSUB_CHANNEL  # Ensure FSUB_ENABLED is imported from config
+from config import *  #Ensure FSUB_ENABLED is imported from config
 from pyrogram.errors import UserNotParticipant, RPCError
 
+async def set_channel_id(client: Client, message: Message, channel_number: int):
+    try:
+        new_id = int(message.command[1])
 
+        # Get bot's user information
+        bot_info = await client.get_me()
+
+        # Check if the bot is an admin in the specified channel
+        bot_member = await client.get_chat_member(new_id, bot_info.id)
+        if bot_member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]:
+            await message.reply("The bot is not an admin of this channel. Please make the bot an admin and try again.")
+            return
+
+        # Try to get the invite link from the channel to ensure the bot can access it
+        try:
+            invite_link = await client.export_chat_invite_link(new_id)
+        except Exception as e:
+            await message.reply(f"Error: The bot doesn't have permission to get the invite link for this channel. Error: {str(e)}")
+            return
+
+        # Update the appropriate FSUB_CHANNEL variable
+        if channel_number == 1:
+            global FSUB_CHANNEL1
+            FSUB_CHANNEL1 = new_id
+        elif channel_number == 2:
+            global FSUB_CHANNEL2
+            FSUB_CHANNEL2 = new_id
+        elif channel_number == 3:
+            global FSUB_CHANNEL3
+            FSUB_CHANNEL3 = new_id
+        elif channel_number == 4:
+            global FSUB_CHANNEL4
+            FSUB_CHANNEL4 = new_id
+
+        await message.reply(f"Fsub channel ID for Channel {channel_number} has been updated to: {new_id}")
+
+    except ValueError:
+        await message.reply("Invalid channel ID. Please provide a valid number.")
+    except Exception as e:
+        await message.reply(f"An error occurred: {str(e)}")
 
 async def encode(string):
     string_bytes = string.encode("ascii")
