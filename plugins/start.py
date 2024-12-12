@@ -511,3 +511,12 @@ async def fsub_status(client: Client, message: Message):
         status_message,
         parse_mode=ParseMode.MARKDOWN
     )
+
+@Bot.on_message(filters.command('togglefsub') & filters.user(ADMINS))
+async def toggle_fsub(client: Client, message: Message):
+    global FSUB_ENABLED
+
+    # Toggle the Fsub state
+    FSUB_ENABLED = not FSUB_ENABLED
+    status = "enabled" if FSUB_ENABLED else "disabled"
+    await message.reply(f"Fsub has been {status}.")
