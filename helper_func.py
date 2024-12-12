@@ -4,7 +4,7 @@ import base64
 import re
 import asyncio
 import logging 
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.enums import ChatMemberStatus
 from config import ADMINS, AUTO_DELETE_TIME, AUTO_DEL_SUCCESS_MSG
 from pyrogram.errors import FloodWait
