@@ -385,6 +385,10 @@ async def not_joined(client: Client, message: Message):
     sub2 = await is_subscribed2(client, message)
     sub3 = await is_subscribed3(client, message)
     sub4 = await is_subscribed4(client, message)
+    invite_link1 = await client.export_chat_invite_link(FSUB_CHANNEL1)
+    invite_link2 = await client.export_chat_invite_link(FSUB_CHANNEL2)
+    invite_link3 = await client.export_chat_invite_link(FSUB_CHANNEL3)
+    invite_link4 = await client.export_chat_invite_link(FSUB_CHANNEL4)
     
     try:
         # Check subscription for each channel
