@@ -17,6 +17,7 @@ FSUB_CHANNEL3 = None
 FSUB_CHANNEL4 = None  # Default value if not set
 FSUB_ENABLED = True  # Change dynamically using commands
 
+    
 
 async def is_subscribed1(filter, client, update):
     global FSUB_ENABLED, FSUB_CHANNEL1, ADMINS
@@ -196,7 +197,7 @@ REPLY_ERROR = "<code>Use this command as a reply to any telegram message without
 
 @Bot.on_message(filters.command('start') & subscribed)
 async def start_command(client: Client, message: Message):
-    global FSUB_CHANNEL1
+    global FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
 
     user_id = message.from_user.id
     text = message.text
