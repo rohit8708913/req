@@ -19,15 +19,14 @@ FSUB_CHANNEL4 = None  # Default value if not set
 FSUB_ENABLED = True  # Change dynamically using commands
 
     
-
-async def is_subscribed1(filter, client, update):
+async def is_subscribed1(client, message):
     global FSUB_ENABLED, FSUB_CHANNEL1, ADMINS
 
     # If Fsub is disabled, allow all users
     if not FSUB_CHANNEL1 or not FSUB_ENABLED:
         return True
 
-    user_id = update.from_user.id
+    user_id = message.from_user.id  # Use message here instead of update
 
     # Admins bypass the Fsub check
     if user_id in ADMINS:
@@ -64,42 +63,32 @@ sub1 = filters.create(is_subscribed1)
 
 
 #=====================================================================================##
-async def is_subscribed2(filter, client, update):
+
+async def is_subscribed2(client, message):
     global FSUB_ENABLED, FSUB_CHANNEL2, ADMINS
 
-    # If Fsub is disabled, allow all users
     if not FSUB_CHANNEL2 or not FSUB_ENABLED:
         return True
 
-    user_id = update.from_user.id
+    user_id = message.from_user.id
 
-    # Admins bypass the Fsub check
     if user_id in ADMINS:
         return True
 
     try:
-        # Check if the user is a member of the FSUB_CHANNEL2
-        member = await client.get_chat_member(chat_id=FSUB_CHANNEL2, user_id=user_id)
-
-        # Return True if the user is a member, admin, or owner
-        return member.status in [
+        member2 = await client.get_chat_member(chat_id=FSUB_CHANNEL2, user_id=user_id)
+        return member2.status in [
             ChatMemberStatus.OWNER,
             ChatMemberStatus.ADMINISTRATOR,
             ChatMemberStatus.MEMBER,
         ]
-
     except UserNotParticipant:
-        # Handle the case where the user is not part of the channel
         print(f"User {user_id} is not a participant of {FSUB_CHANNEL2}.")
         return False
-
     except RPCError as e:
-        # Handle other Telegram API exceptions
         print(f"RPC error in is_subscribed filter: {e}")
         return False
-
     except Exception as e:
-        # Catch any unexpected errors
         print(f"Error in is_subscribed filter: {e}")
         return False
 
@@ -107,42 +96,32 @@ async def is_subscribed2(filter, client, update):
 sub2 = filters.create(is_subscribed2)
 
 #=====================================================================================##
-async def is_subscribed3(filter, client, update):
+
+async def is_subscribed3(client, message):
     global FSUB_ENABLED, FSUB_CHANNEL3, ADMINS
 
-    # If Fsub is disabled, allow all users
     if not FSUB_CHANNEL3 or not FSUB_ENABLED:
         return True
 
-    user_id = update.from_user.id
+    user_id = message.from_user.id
 
-    # Admins bypass the Fsub check
     if user_id in ADMINS:
         return True
 
     try:
-        # Check if the user is a member of the FSUB_CHANNEL3
-        member = await client.get_chat_member(chat_id=FSUB_CHANNEL3, user_id=user_id)
-
-        # Return True if the user is a member, admin, or owner
-        return member.status in [
+        member3 = await client.get_chat_member(chat_id=FSUB_CHANNEL3, user_id=user_id)
+        return member3.status in [
             ChatMemberStatus.OWNER,
             ChatMemberStatus.ADMINISTRATOR,
             ChatMemberStatus.MEMBER,
         ]
-
     except UserNotParticipant:
-        # Handle the case where the user is not part of the channel
         print(f"User {user_id} is not a participant of {FSUB_CHANNEL3}.")
         return False
-
     except RPCError as e:
-        # Handle other Telegram API exceptions
         print(f"RPC error in is_subscribed filter: {e}")
         return False
-
     except Exception as e:
-        # Catch any unexpected errors
         print(f"Error in is_subscribed filter: {e}")
         return False
 
@@ -150,42 +129,32 @@ async def is_subscribed3(filter, client, update):
 sub3 = filters.create(is_subscribed3)
 
 #=====================================================================================##
-async def is_subscribed4(filter, client, update):
+
+async def is_subscribed4(client, message):
     global FSUB_ENABLED, FSUB_CHANNEL4, ADMINS
 
-    # If Fsub is disabled, allow all users
     if not FSUB_CHANNEL4 or not FSUB_ENABLED:
         return True
 
-    user_id = update.from_user.id
+    user_id = message.from_user.id
 
-    # Admins bypass the Fsub check
     if user_id in ADMINS:
         return True
 
     try:
-        # Check if the user is a member of the FSUB_CHANNEL4
-        member = await client.get_chat_member(chat_id=FSUB_CHANNEL4, user_id=user_id)
-
-        # Return True if the user is a member, admin, or owner
-        return member.status in [
+        member4 = await client.get_chat_member(chat_id=FSUB_CHANNEL4, user_id=user_id)
+        return member4.status in [
             ChatMemberStatus.OWNER,
             ChatMemberStatus.ADMINISTRATOR,
             ChatMemberStatus.MEMBER,
         ]
-
     except UserNotParticipant:
-        # Handle the case where the user is not part of the channel
         print(f"User {user_id} is not a participant of {FSUB_CHANNEL4}.")
         return False
-
     except RPCError as e:
-        # Handle other Telegram API exceptions
         print(f"RPC error in is_subscribed filter: {e}")
         return False
-
     except Exception as e:
-        # Catch any unexpected errors
         print(f"Error in is_subscribed filter: {e}")
         return False
 
