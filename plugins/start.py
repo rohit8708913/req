@@ -60,7 +60,7 @@ async def is_subscribed1(filter, client, update):
         return False
 
 # Register the filter
-subscribed1 = filters.create(is_subscribed1)
+sub1 = filters.create(is_subscribed1)
 
 
 #=====================================================================================##
@@ -79,10 +79,10 @@ async def is_subscribed2(filter, client, update):
 
     try:
         # Check if the user is a member of the FSUB_CHANNEL2
-        member2 = await client.get_chat_member(chat_id=FSUB_CHANNEL2, user_id=user_id)
+        member = await client.get_chat_member(chat_id=FSUB_CHANNEL2, user_id=user_id)
 
         # Return True if the user is a member, admin, or owner
-        return member2.status in [
+        return member.status in [
             ChatMemberStatus.OWNER,
             ChatMemberStatus.ADMINISTRATOR,
             ChatMemberStatus.MEMBER,
@@ -104,7 +104,7 @@ async def is_subscribed2(filter, client, update):
         return False
 
 # Register the filter
-subscribed2 = filters.create(is_subscribed2)
+sub2 = filters.create(is_subscribed2)
 
 #=====================================================================================##
 async def is_subscribed3(filter, client, update):
@@ -122,10 +122,10 @@ async def is_subscribed3(filter, client, update):
 
     try:
         # Check if the user is a member of the FSUB_CHANNEL3
-        member3 = await client.get_chat_member(chat_id=FSUB_CHANNEL3, user_id=user_id)
+        member = await client.get_chat_member(chat_id=FSUB_CHANNEL3, user_id=user_id)
 
         # Return True if the user is a member, admin, or owner
-        return member3.status in [
+        return member.status in [
             ChatMemberStatus.OWNER,
             ChatMemberStatus.ADMINISTRATOR,
             ChatMemberStatus.MEMBER,
@@ -147,7 +147,7 @@ async def is_subscribed3(filter, client, update):
         return False
 
 # Register the filter
-subscribed3 = filters.create(is_subscribed3)
+sub3 = filters.create(is_subscribed3)
 
 #=====================================================================================##
 async def is_subscribed4(filter, client, update):
@@ -165,10 +165,10 @@ async def is_subscribed4(filter, client, update):
 
     try:
         # Check if the user is a member of the FSUB_CHANNEL4
-        member4 = await client.get_chat_member(chat_id=FSUB_CHANNEL4, user_id=user_id)
+        member = await client.get_chat_member(chat_id=FSUB_CHANNEL4, user_id=user_id)
 
         # Return True if the user is a member, admin, or owner
-        return member4.status in [
+        return member.status in [
             ChatMemberStatus.OWNER,
             ChatMemberStatus.ADMINISTRATOR,
             ChatMemberStatus.MEMBER,
@@ -190,13 +190,13 @@ async def is_subscribed4(filter, client, update):
         return False
 
 # Register the filter
-subscribed4 = filters.create(is_subscribed4)
+sub4 = filters.create(is_subscribed4)
 #=====================================================================================##
 WAIT_MSG = "<b>Processing ...</b>"
 REPLY_ERROR = "<code>Use this command as a reply to any telegram message without any spaces.</code>"
 #=====================================================================================##
 
-@Bot.on_message(filters.command('start') & subscribed1 & subscribed2 & subscribed3 & subscribed4)
+@Bot.on_message(filters.command('start') & sub1 & sub2 & sub3 & sub4)
 async def start_command(client: Client, message: Message):
     global FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
 
@@ -401,37 +401,7 @@ async def not_joined(client: Client, message: Message):
             return  # User is subscribed to FSUB_CHANNEL4, so we return
 
         else:
-            # User is not subscribed to any of the channels, show the join buttons
-            buttons = []
-
-            # Add join buttons for each channel if not already subscribed
-            if FSUB_CHANNEL1:
-                invite_link1 = await client.export_chat_invite_link(FSUB_CHANNEL1)
-                buttons.append([InlineKeyboardButton("Join Channel 1", url=invite_link1)])
-
-            if FSUB_CHANNEL2:
-                invite_link2 = await client.export_chat_invite_link(FSUB_CHANNEL2)
-                buttons.append([InlineKeyboardButton("Join Channel 2", url=invite_link2)])
-
-            if FSUB_CHANNEL3:
-                invite_link3 = await client.export_chat_invite_link(FSUB_CHANNEL3)
-                buttons.append([InlineKeyboardButton("Join Channel 3", url=invite_link3)])
-
-            if FSUB_CHANNEL4:
-                invite_link4 = await client.export_chat_invite_link(FSUB_CHANNEL4)
-                buttons.append([InlineKeyboardButton("Join Channel 4", url=invite_link4)])
-
-            # Optionally, add a "Try Again" button if a command was provided
-            try:
-                buttons.append([
-                    InlineKeyboardButton(
-                        "Try Again",
-                        url=f"https://t.me/{client.username}?start={message.command[1]}"
-                    )
-                ])
-            except IndexError:
-                pass
-
+            
             # Send the reply with the join buttons
             await message.reply(
                 FORCE_MSG.format(
@@ -663,3 +633,13 @@ async def toggle_fsub4(client: Client, message: Message):
         status = "enabled"
 
     await message.reply(f"Fsub for Channel 4 has been {status}.")
+
+#=====================================================================================##
+
+invite_link1 = await client.export_chat_invite_link(FSUB_CHANNEL1)
+
+invite_link2 = await client.export_chat_invite_link(FSUB_CHANNEL2)
+
+invite_link3 = await client.export_chat_invite_link(FSUB_CHANNEL3)
+
+invite_link4 = await client.export_chat_invite_link(FSUB_CHANNEL4)
