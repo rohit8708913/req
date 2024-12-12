@@ -600,44 +600,27 @@ async def set_fsub_id4(client: Client, message: Message):
     await set_channel_id(client, message, 4)
 #=====================================================================================##
 
-
 @Bot.on_message(filters.command('fsubstatus') & filters.user(ADMINS))
 async def fsub_status(client: Client, message: Message):
-    global FSUB_ENABLED, FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
+    global FSUB_ENABLED
+    global FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
 
-    # Define channels with usernames or IDs (if using usernames, ensure the bot has access to them)
-    channels = {
-        "Channel 1": FSUB_CHANNEL1,
-        "Channel 2": FSUB_CHANNEL2,
-        "Channel 3": FSUB_CHANNEL3,
-        "Channel 4": FSUB_CHANNEL4,
-    }
+    status = "enabled" if FSUB_ENABLED else "disabled"
 
-    # Build the status message
-    status_message = f"**Force Subscription Status:**\n\n**Global Status:** {'Enabled' if FSUB_ENABLED else 'Disabled'}\n\n"
+    # Check the status for each channel
+    channel_1_info = f"Channel 1 ID: `{FSUB_CHANNEL1}`" if FSUB_CHANNEL1 else "Channel 1: No channel set."
+    channel_2_info = f"Channel 2 ID: `{FSUB_CHANNEL2}`" if FSUB_CHANNEL2 else "Channel 2: No channel set."
+    channel_3_info = f"Channel 3 ID: `{FSUB_CHANNEL3}`" if FSUB_CHANNEL3 else "Channel 3: No channel set."
+    channel_4_info = f"Channel 4 ID: `{FSUB_CHANNEL4}`" if FSUB_CHANNEL4 else "Channel 4: No channel set."
 
-    for channel_name, channel_identifier in channels.items():
-        if channel_identifier:
-            try:
-                # Try resolving the channel to get the channel ID
-                chat = await client.get_chat(channel_identifier)  # Resolves the chat (username or channel ID) to the chat object
-                channel_id = chat.id  # Get the actual channel ID
-                status_message += f"**{channel_name}:** Enabled\nChannel ID: `{channel_id}`\n"
-            except PeerIdInvalid:
-                # In case the channel ID is invalid (e.g., incorrect ID format or access issues)
-                status_message += f"**{channel_name}:** Disabled\nChannel ID: `Invalid ID or access issue`\n"
-            except ChatIdInvalid:
-                # In case the username is not found (e.g., incorrect username or bot is not a member)
-                status_message += f"**{channel_name}:** Disabled\nChannel ID: `Not Found`\n"
-            except Exception as e:
-                # Catch any other unforeseen errors
-                status_message += f"**{channel_name}:** Disabled\nError: `{str(e)}`\n"
-        else:
-            status_message += f"**{channel_name}:** Disabled\n"
-
-    # Send the status message
+    # Send the reply
     await message.reply_text(
-        status_message,
+        f"**Force Subscription Status:**\n\n"
+        f"**Status:** {status.capitalize()}\n\n"
+        f"{channel_1_info}\n"
+        f"{channel_2_info}\n"
+        f"{channel_3_info}\n"
+        f"{channel_4_info}",
         parse_mode=ParseMode.MARKDOWN
     )
 
