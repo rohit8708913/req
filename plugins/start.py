@@ -403,7 +403,8 @@ async def not_joined(client: Client, message: Message):
     except Exception as e:
         print(f"Error while checking membership: {e}")
         return
-
+    else:
+try:
     # If the user is not subscribed to any channel, prepare the join buttons
     buttons = []
 
