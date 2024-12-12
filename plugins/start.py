@@ -684,7 +684,7 @@ async def toggle_fsub1(client: Client, message: Message):
         FSUB_CHANNEL1 = None
         status = "disabled"
     else:
-        FSUB_CHANNEL1 = "Your_Channel_ID_1"  # Replace with the actual channel ID dynamically if needed
+        FSUB_CHANNEL1 = None  # Replace with the actual channel ID dynamically if needed
         status = "enabled"
 
     await message.reply(f"Fsub for Channel 1 has been {status}.")
@@ -698,7 +698,7 @@ async def toggle_fsub2(client: Client, message: Message):
         FSUB_CHANNEL2 = None
         status = "disabled"
     else:
-        FSUB_CHANNEL2 = "Your_Channel_ID_2"  # Replace with the actual channel ID dynamically if needed
+        FSUB_CHANNEL2 = None  # Replace with the actual channel ID dynamically if needed
         status = "enabled"
 
     await message.reply(f"Fsub for Channel 2 has been {status}.")
@@ -712,7 +712,7 @@ async def toggle_fsub3(client: Client, message: Message):
         FSUB_CHANNEL3 = None
         status = "disabled"
     else:
-        FSUB_CHANNEL3 = "Your_Channel_ID_3"  # Replace with the actual channel ID dynamically if needed
+        FSUB_CHANNEL3 = None  # Replace with the actual channel ID dynamically if needed
         status = "enabled"
 
     await message.reply(f"Fsub for Channel 3 has been {status}.")
@@ -726,7 +726,7 @@ async def toggle_fsub4(client: Client, message: Message):
         FSUB_CHANNEL4 = None
         status = "disabled"
     else:
-        FSUB_CHANNEL4 = "Your_Channel_ID_4"  # Replace with the actual channel ID dynamically if needed
+        FSUB_CHANNEL4 = None  # Replace with the actual channel ID dynamically if needed
         status = "enabled"
 
     await message.reply(f"Fsub for Channel 4 has been {status}.")
