@@ -721,10 +721,3 @@ async def toggle_fsub4(client: Client, message: Message):
 
 #=====================================================================================##
 
-invite_link1 = await client.export_chat_invite_link(FSUB_CHANNEL1)
-
-invite_link2 = await client.export_chat_invite_link(FSUB_CHANNEL2)
-
-invite_link3 = await client.export_chat_invite_link(FSUB_CHANNEL3)
-
-invite_link4 = await client.export_chat_invite_link(FSUB_CHANNEL4)
