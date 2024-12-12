@@ -512,14 +512,27 @@ async def fsub_status(client: Client, message: Message):
         parse_mode=ParseMode.MARKDOWN
     )
 
+#=====================================================================================##
+
 @Bot.on_message(filters.command('togglefsub') & filters.user(ADMINS))
 async def toggle_fsub(client: Client, message: Message):
-    global FSUB_ENABLED
+    global FSUB_ENABLED, FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
 
-    # Toggle the Fsub state
+    # Toggle the global Fsub state
     FSUB_ENABLED = not FSUB_ENABLED
     status = "enabled" if FSUB_ENABLED else "disabled"
-    await message.reply(f"Fsub has been {status}.")
+
+    if not FSUB_ENABLED:
+        # If globally disabled, turn off all individual channels
+        FSUB_CHANNEL1 = None
+        FSUB_CHANNEL2 = None
+        FSUB_CHANNEL3 = None
+        FSUB_CHANNEL4 = None
+        await message.reply(
+            f"Fsub has been globally {status}. All channels have been disabled."
+        )
+    else:
+        await message.reply(f"Fsub has been globally {status}.")
 
 
 @Bot.on_message(filters.command('togglefsub1') & filters.user(ADMINS))
