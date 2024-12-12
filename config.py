@@ -31,8 +31,11 @@ DB_NAME = os.environ.get("DATABASE_NAME", "filesx")
 
 
 # Define initial FSUB status (enabled by default)
-FSUB_ENABLED = True  # Change dynamically using commands
-FSUB_CHANNEL = None  # Default value if not set
+FSUB_ENABLED = True  # Change dynamically using commands 
+FSUB_CHANNEL1 = None
+FSUB_CHANNEL2 = None
+FSUB_CHANNEL3 = None
+FSUB_CHANNEL4 = None  # Default value if not set# Default value if not set
 
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "50"))
 
