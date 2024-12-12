@@ -449,41 +449,48 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         await asyncio.sleep(8)
         await msg.delete()
 #=====================================================================================##
-@Bot.on_message(filters.command('setfsubid') & filters.user(ADMINS))
-async def set_fsub_id(client: Client, message: Message):
-    global FSUB_CHANNEL
+@Bot.on_message(filters.command('setfsubid1') & filters.user(ADMINS))
+async def set_fsub_id1(client: Client, message: Message):
+    global FSUB_CHANNEL1
 
     if len(message.command) != 2:
-        await message.reply("Usage: /setfsubid <channel_id>")
+        await message.reply("Usage: /setfsubid1 <channel_id>")
         return
 
-    try:
-        new_id = int(message.command[1])
+    await set_channel_id(client, message, 1)
 
-        # Get bot's user information
-        bot_info = await client.get_me()
 
-        # Check if the bot is an admin in the specified channel
-        bot_member = await client.get_chat_member(new_id, bot_info.id)
-        if bot_member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]:
-            await message.reply("The bot is not an admin of this channel. Please make the bot an admin and try again.")
-            return
-        
-        # Try to get the invite link from the channel to ensure the bot can access it
-        try:
-            invite_link = await client.export_chat_invite_link(new_id)
-        except Exception as e:
-            await message.reply(f"Error: The bot doesn't have permission to get the invite link for this channel. Error: {str(e)}")
-            return
-        
-        # If no exception occurred, update the FSUB_CHANNEL
-        FSUB_CHANNEL = new_id
-        await message.reply(f"Fsub channel ID has been updated to: {new_id}")
+@Bot.on_message(filters.command('setfsubid2') & filters.user(ADMINS))
+async def set_fsub_id2(client: Client, message: Message):
+    global FSUB_CHANNEL2
 
-    except ValueError:
-        await message.reply("Invalid channel ID. Please provide a valid number.")
-    except Exception as e:
-        await message.reply(f"An error occurred: {str(e)}")
+    if len(message.command) != 2:
+        await message.reply("Usage: /setfsubid2 <channel_id>")
+        return
+
+    await set_channel_id(client, message, 2)
+
+
+@Bot.on_message(filters.command('setfsubid3') & filters.user(ADMINS))
+async def set_fsub_id3(client: Client, message: Message):
+    global FSUB_CHANNEL3
+
+    if len(message.command) != 2:
+        await message.reply("Usage: /setfsubid3 <channel_id>")
+        return
+
+    await set_channel_id(client, message, 3)
+
+
+@Bot.on_message(filters.command('setfsubid4') & filters.user(ADMINS))
+async def set_fsub_id4(client: Client, message: Message):
+    global FSUB_CHANNEL4
+
+    if len(message.command) != 2:
+        await message.reply("Usage: /setfsubid4 <channel_id>")
+        return
+
+    await set_channel_id(client, message, 4)
 #=====================================================================================##
 
 @Bot.on_message(filters.command('fsubstatus') & filters.user(ADMINS))
