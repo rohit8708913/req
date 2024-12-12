@@ -228,8 +228,7 @@ async def start_command(client: Client, message: Message):
 
     except UserNotParticipant:
         # If user is not a member of FSUB_CHANNEL, prompt to join
-        invite_link = await client.create_chat_invite_link(FSUB_CHANNEL, creates_join_request=JOIN_REQUEST_ENABLE) if JOIN_REQUEST_ENABLE else await client.export_chat_invite_link(FSUB_CHANNEL)
-
+        invite_link = await client.export_chat_invite_link(FSUB_CHANNEL)
         buttons = [
             [InlineKeyboardButton("Join Channel", url=invite_link)]
         ]
