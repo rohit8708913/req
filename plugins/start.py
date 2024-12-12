@@ -12,6 +12,32 @@ from database.database import add_user, del_user, full_userbase, present_user
 FSUB_CHANNEL = None  # Default value if not set
 FSUB_ENABLED = True  # Change dynamically using commands
 
+
+# Filter to check user subscription
+def is_subscribed1():
+    async def func(_, __, message: Message):
+        global FSUB_ENABLED, FSUB_CHANNEL
+        if not FSUB_CHANNEL:
+            return True  # Pass through if FSUB is disabled
+        
+        user_id = message.from_user.id
+        try:
+            # Check user's membership status
+            member = await message._client.get_chat_member(FSUB_CHANNEL, user_id)
+
+            # Allow only subscribed users
+            return member.status in [
+                ChatMemberStatus.OWNER,
+                ChatMemberStatus.ADMINISTRATOR,
+                ChatMemberStatus.MEMBER,
+            ]
+        except UserNotParticipant:
+            return False
+        except RPCError as e:
+            print(f"Error verifying subscription: {e}")
+            return False
+
+    return filters.create(subscribed1)
 #=====================================================================================##
 WAIT_MSG = "<b>Processing ...</b>"
 REPLY_ERROR = "<code>Use this command as a reply to any telegram message without any spaces.</code>"
