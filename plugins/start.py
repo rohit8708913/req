@@ -9,6 +9,8 @@ from config import *
 from helper_func import *
 from database.database import add_user, del_user, full_userbase, present_user
 
+#=====================================================================================##
+
 FSUB_CHANNEL = None  # Default value if not set
 FSUB_ENABLED = True  # Change dynamically using commands
 
@@ -68,10 +70,7 @@ async def start_command(client: Client, message: Message):
 
     # If FSUB is disabled or FSUB_CHANNEL is not set, skip subscription check
     if not FSUB_ENABLED or not FSUB_CHANNEL:
-        if not await present_user(user_id):
-            try:
-                await add_user(user_id)
-            except:
+ 
                 pass
 
         # If the command includes base64 encoded string, process it
@@ -210,46 +209,57 @@ async def start_command(client: Client, message: Message):
 
         return
 
-    # If FSUB is enabled, check subscription
-    try:
-        member = await client.get_chat_member(FSUB_CHANNEL, user_id)
+ #=====================================================================================##
+ 
+@Bot.on_message(filters.command('start') & filters.private)
+async def not_joined(client: Client, message: Message):
+    global FSUB_CHANNEL
 
-        if member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
+    # Use the is_subscribed filter for checking membership
+    user_id = message.from_user.id
+
+    try:
+        # Check if the user is subscribed using the filter
+        if await is_subscribed(None, client, message):
             # User is subscribed
             if not await present_user(user_id):
                 try:
                     await add_user(user_id)
-                except:
-                    pass
+                except Exception as e:
+                    print(f"Error adding user: {e}")
 
             # Proceed with the command
             await start_command(client, message)
             return  # Return after handling subscription
+        else:
+            # User is not a member of FSUB_CHANNEL, prompt to join
+            invite_link = await client.export_chat_invite_link(FSUB_CHANNEL)
+            buttons = [[InlineKeyboardButton("Join Channel", url=invite_link)]]
 
-    except UserNotParticipant:
-        # If user is not a member of FSUB_CHANNEL, prompt to join
-        invite_link = await client.export_chat_invite_link(FSUB_CHANNEL)
-        buttons = [
-            [InlineKeyboardButton("Join Channel", url=invite_link)]
-        ]
+            try:
+                buttons.append([
+                    InlineKeyboardButton(
+                        "Try Again",
+                        url=f"https://t.me/{client.username}?start={message.command[1]}"
+                    )
+                ])
+            except IndexError:
+                pass
 
-        try:
-            buttons.append([InlineKeyboardButton("Try Again", url=f"https://t.me/{client.username}?start={message.command[1]}")])
-        except IndexError:
-            pass
-
-        await message.reply(
-            FORCE_MSG.format(
-                first=message.from_user.first_name or "User",
-                last=message.from_user.last_name or "",
-                username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
-                mention=message.from_user.mention,
-                id=message.from_user.id
-            ),
-            reply_markup=InlineKeyboardMarkup(buttons)
-        )
+            await message.reply(
+                FORCE_MSG.format(
+                    first=message.from_user.first_name or "User",
+                    last=message.from_user.last_name or "",
+                    username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
+                    mention=message.from_user.mention,
+                    id=message.from_user.id
+                ),
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
     except Exception as e:
-        print(f"Error while checking membership: {e}")
+        print(f"Error while checking membership: {e}")       
+
+#=====================================================================================##
 
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
@@ -302,7 +312,7 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         msg = await message.reply(REPLY_ERROR)
         await asyncio.sleep(8)
         await msg.delete()
-
+#=====================================================================================##
 @Bot.on_message(filters.command('setfsubid') & filters.user(ADMINS))
 async def set_fsub_id(client: Client, message: Message):
     global FSUB_CHANNEL
@@ -338,7 +348,7 @@ async def set_fsub_id(client: Client, message: Message):
         await message.reply("Invalid channel ID. Please provide a valid number.")
     except Exception as e:
         await message.reply(f"An error occurred: {str(e)}")
-
+#=====================================================================================##
 @Bot.on_message(filters.command('togglefsub') & filters.user(ADMINS))
 async def toggle_fsub(client: Client, message: Message):
     global FSUB_ENABLED
