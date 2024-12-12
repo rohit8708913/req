@@ -13,37 +13,53 @@ FSUB_CHANNEL = None  # Default value if not set
 FSUB_ENABLED = True  # Change dynamically using commands
 
 
-# Filter to check user subscription
-def is_subscribed1():
-    async def func(_, __, message: Message):
-        global FSUB_ENABLED, FSUB_CHANNEL
-        if not FSUB_CHANNEL:
-            return True  # Pass through if FSUB is disabled
-        
-        user_id = message.from_user.id
-        try:
-            # Check user's membership status
-            member = await message._client.get_chat_member(FSUB_CHANNEL, user_id)
+async def is_subscribed(filter, client, update):
+    global FSUB_ENABLED, FSUB_CHANNEL, ADMINS
 
-            # Allow only subscribed users
-            return member.status in [
-                ChatMemberStatus.OWNER,
-                ChatMemberStatus.ADMINISTRATOR,
-                ChatMemberStatus.MEMBER,
-            ]
-        except UserNotParticipant:
-            return False
-        except RPCError as e:
-            print(f"Error verifying subscription: {e}")
-            return False
+    # If Fsub is disabled, allow all users
+    if not FSUB_CHANNEL:
+        return True
 
-    return filters.create(subscribed1)
+    user_id = update.from_user.id
+
+    # Admins bypass the Fsub check
+    if user_id in ADMINS:
+        return True
+
+    try:
+        # Check if the user is a member of the FSUB_CHANNEL
+        member = await client.get_chat_member(chat_id=FSUB_CHANNEL, user_id=user_id)
+
+        # Return True if the user is a member, admin, or owner
+        return member.status in [
+            ChatMemberStatus.OWNER,
+            ChatMemberStatus.ADMINISTRATOR,
+            ChatMemberStatus.MEMBER,
+        ]
+
+    except UserNotParticipant:
+        # Handle the case where the user is not part of the channel
+        print(f"User {user_id} is not a participant of {FSUB_CHANNEL}.")
+        return False
+
+    except RPCError as e:
+        # Handle other Telegram API exceptions
+        print(f"RPC error in is_subscribed filter: {e}")
+        return False
+
+    except Exception as e:
+        # Catch any unexpected errors
+        print(f"Error in is_subscribed filter: {e}")
+        return False
+
+# Register the filter
+subscribed = filters.create(is_subscribed)
 #=====================================================================================##
 WAIT_MSG = "<b>Processing ...</b>"
 REPLY_ERROR = "<code>Use this command as a reply to any telegram message without any spaces.</code>"
 #=====================================================================================##
 
-@Bot.on_message(filters.command('start') & filters.private)
+@Bot.on_message(filters.command('start') & subscribed)
 async def start_command(client: Client, message: Message):
     global FSUB_CHANNEL
 
