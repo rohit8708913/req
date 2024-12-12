@@ -19,7 +19,7 @@ FSUB_CHANNEL4 = None  # Default value if not set
 FSUB_ENABLED = True  # Change dynamically using commands
 
     
-async def is_subscribed1(client, message):
+async def is_subscribed1(client, message, update):
     global FSUB_ENABLED, FSUB_CHANNEL1, ADMINS
 
     # If Fsub is disabled, allow all users
@@ -64,7 +64,7 @@ sub1 = filters.create(is_subscribed1)
 
 #=====================================================================================##
 
-async def is_subscribed2(client, message):
+async def is_subscribed2(client, message, update):
     global FSUB_ENABLED, FSUB_CHANNEL2, ADMINS
 
     if not FSUB_CHANNEL2 or not FSUB_ENABLED:
@@ -97,7 +97,7 @@ sub2 = filters.create(is_subscribed2)
 
 #=====================================================================================##
 
-async def is_subscribed3(client, message):
+async def is_subscribed3(client, message, update):
     global FSUB_ENABLED, FSUB_CHANNEL3, ADMINS
 
     if not FSUB_CHANNEL3 or not FSUB_ENABLED:
@@ -130,7 +130,7 @@ sub3 = filters.create(is_subscribed3)
 
 #=====================================================================================##
 
-async def is_subscribed4(client, message):
+async def is_subscribed4(client, message, update):
     global FSUB_ENABLED, FSUB_CHANNEL4, ADMINS
 
     if not FSUB_CHANNEL4 or not FSUB_ENABLED:
@@ -383,19 +383,19 @@ async def not_joined(client: Client, message: Message):
 
     try:
         # Check subscription for each channel
-        if await is_subscribed1(client, message):  # Call with 2 arguments: client and message
+        if await is_subscribed1(client, message, message):  # Call with 2 arguments: client and message
             if not await present_user(message.from_user.id):
                 await add_user(message.from_user.id)
             await start_command(client, message)  # Start after checking subscription for Channel 1
-        elif await is_subscribed2(client, message):
+        elif await is_subscribed2(client, message, message):
             if not await present_user(message.from_user.id):
                 await add_user(message.from_user.id)
             await start_command(client, message)  # Start after checking subscription for Channel 2
-        elif await is_subscribed3(client, message):
+        elif await is_subscribed3(client, message, message):
             if not await present_user(message.from_user.id):
                 await add_user(message.from_user.id)
             await start_command(client, message)  # Start after checking subscription for Channel 3
-        elif await is_subscribed4(client, message):
+        elif await is_subscribed4(client, message, message):
             if not await present_user(message.from_user.id):
                 await add_user(message.from_user.id)
             await start_command(client, message)  # Start after checking subscription for Channel 4
