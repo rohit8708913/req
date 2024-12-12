@@ -1,6 +1,7 @@
 #(©)Codexbotz
 
 import base64
+import os
 import re
 import asyncio
 import logging 
@@ -10,6 +11,7 @@ from config import ADMINS, AUTO_DELETE_TIME, AUTO_DEL_SUCCESS_MSG
 from pyrogram.errors import FloodWait
 from config import *  #Ensure FSUB_ENABLED is imported from config
 from pyrogram.errors import UserNotParticipant, RPCError
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 async def set_channel_id(client: Client, message: Message, channel_number: int):
     try:
