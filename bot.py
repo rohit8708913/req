@@ -2,7 +2,7 @@ from aiohttp import web
 from plugins import web_server
 
 import pyromod.listen
-from pyrogram.enums import ParseMode
+from pyrogram.enums import ParseMode, ChatMemberStatus
 import sys
 from datetime import datetime
 from pyrogram import Client, filters
@@ -20,9 +20,12 @@ from config import (
     ADMINS,
 )
 
-# Dynamic Fsub variables
+# Dynamic Fsub variables for 4 channels
 FSUB_ENABLED = True  # Force subscription enabled by default
 FSUB_CHANNEL1 = None  # Dynamic channel ID (set via commands)
+FSUB_CHANNEL2 = None
+FSUB_CHANNEL3 = None
+FSUB_CHANNEL4 = None
 
 
 class Bot(Client):
@@ -40,24 +43,63 @@ class Bot(Client):
         self.LOGGER = LOGGER
 
     async def start(self):
-        global FSUB_CHANNEL
+        global FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
 
         await super().start()
         usr_bot_me = await self.get_me()
         self.uptime = datetime.now()
 
-        # Force subscription dynamic setup
+        # Force subscription dynamic setup for all channels separately
         if FSUB_ENABLED and FSUB_CHANNEL1:
             try:
                 link = (await self.get_chat(FSUB_CHANNEL1)).invite_link
                 if not link:
-                    await self.export_chat_invite_link(FSUB_CHANNEL)
-                    link = (await self.get_chat(FSUB_CHANNEL)).invite_link
-                self.invitelink = link
+                    await self.export_chat_invite_link(FSUB_CHANNEL1)
+                    link = (await self.get_chat(FSUB_CHANNEL1)).invite_link
+                self.invitelink1 = link
             except Exception as e:
                 self.LOGGER(__name__).warning(e)
-                self.LOGGER(__name__).warning("Failed to export invite link for Fsub channel!")
-                self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL ({FSUB_CHANNEL}) and ensure the bot is admin with invite permissions.")
+                self.LOGGER(__name__).warning("Failed to export invite link for Fsub channel 1!")
+                self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL1 ({FSUB_CHANNEL1}) and ensure the bot is admin with invite permissions.")
+                sys.exit()
+
+        if FSUB_ENABLED and FSUB_CHANNEL2:
+            try:
+                link = (await self.get_chat(FSUB_CHANNEL2)).invite_link
+                if not link:
+                    await self.export_chat_invite_link(FSUB_CHANNEL2)
+                    link = (await self.get_chat(FSUB_CHANNEL2)).invite_link
+                self.invitelink2 = link
+            except Exception as e:
+                self.LOGGER(__name__).warning(e)
+                self.LOGGER(__name__).warning("Failed to export invite link for Fsub channel 2!")
+                self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL2 ({FSUB_CHANNEL2}) and ensure the bot is admin with invite permissions.")
+                sys.exit()
+
+        if FSUB_ENABLED and FSUB_CHANNEL3:
+            try:
+                link = (await self.get_chat(FSUB_CHANNEL3)).invite_link
+                if not link:
+                    await self.export_chat_invite_link(FSUB_CHANNEL3)
+                    link = (await self.get_chat(FSUB_CHANNEL3)).invite_link
+                self.invitelink3 = link
+            except Exception as e:
+                self.LOGGER(__name__).warning(e)
+                self.LOGGER(__name__).warning("Failed to export invite link for Fsub channel 3!")
+                self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL3 ({FSUB_CHANNEL3}) and ensure the bot is admin with invite permissions.")
+                sys.exit()
+
+        if FSUB_ENABLED and FSUB_CHANNEL4:
+            try:
+                link = (await self.get_chat(FSUB_CHANNEL4)).invite_link
+                if not link:
+                    await self.export_chat_invite_link(FSUB_CHANNEL4)
+                    link = (await self.get_chat(FSUB_CHANNEL4)).invite_link
+                self.invitelink4 = link
+            except Exception as e:
+                self.LOGGER(__name__).warning(e)
+                self.LOGGER(__name__).warning("Failed to export invite link for Fsub channel 4!")
+                self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL4 ({FSUB_CHANNEL4}) and ensure the bot is admin with invite permissions.")
                 sys.exit()
 
         # Validate DB channel access
@@ -87,47 +129,3 @@ class Bot(Client):
         self.LOGGER(__name__).info("Bot stopped.")
 
 
-# Commands for dynamically managing Fsub
-@Bot.on_message(filters.command("togglefsub") & filters.user(ADMINS))
-async def toggle_fsub(client: Client, message: Message):
-    global FSUB_ENABLED
-    FSUB_ENABLED = not FSUB_ENABLED
-    status = "enabled" if FSUB_ENABLED else "disabled"
-    await message.reply(f"Force subscription has been {status}.")
-
-
-@Bot.on_message(filters.command('setfsubid') & filters.user(ADMINS))
-async def set_fsub_id(client: Client, message: Message):
-    global FSUB_CHANNEL
-
-    if len(message.command) != 2:
-        await message.reply("Usage: /setfsubid <channel_id>")
-        return
-
-    try:
-        new_id = int(message.command[1])
-
-        # Get bot's user information
-        bot_info = await client.get_me()
-
-        # Check if the bot is an admin in the specified channel
-        bot_member = await client.get_chat_member(new_id, bot_info.id)
-        if bot_member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]:
-            await message.reply("The bot is not an admin of this channel. Please make the bot an admin and try again.")
-            return
-
-        # Try to get the invite link from the channel to ensure the bot can access it
-        try:
-            invite_link = await client.export_chat_invite_link(new_id)
-        except Exception as e:
-            await message.reply(f"Error: The bot doesn't have permission to get the invite link for this channel. Error: {str(e)}")
-            return
-
-        # If no exception occurred, update the FSUB_CHANNEL
-        FSUB_CHANNEL = new_id
-        await message.reply(f"Fsub channel ID has been updated to: {new_id}")
-
-    except ValueError:
-        await message.reply("Invalid channel ID. Please provide a valid number.")
-    except Exception as e:
-        await message.reply(f"An error occurred: {str(e)}")
