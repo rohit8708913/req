@@ -556,10 +556,6 @@ async def not_joined(client: Client, message: Message):
             ),
             reply_markup=InlineKeyboardMarkup(buttons)
         )
-    except Exception as e:
-        # Handle any errors that occur during the process
-        print(f"Error: {e}")
-        await message.reply("Something went wrong. Please try again later.")
 
 #=====================================================================================##
 
