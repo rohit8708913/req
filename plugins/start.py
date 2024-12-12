@@ -568,7 +568,7 @@ async def fsub_status(client: Client, message: Message):
                 chat = await client.get_chat(channel_username)  # Resolves the chat (username) to the chat object
                 channel_id = chat.id  # Get the actual channel ID
                 status_message += f"**{channel_name}:** Enabled\nChannel ID: `{channel_id}`\n"
-            except ChatNotFound:
+            except ChatIdInvalid:
                 # In case the channel username is not found (e.g., incorrect username or bot is not added)
                 status_message += f"**{channel_name}:** Disabled\nChannel ID: `Not Found`\n"
         else:
