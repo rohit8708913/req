@@ -401,83 +401,91 @@ async def not_joined(client: Client, message: Message):
             return  # User is subscribed to FSUB_CHANNEL4, so we return
 
         else:
+            # If none of the channels are subscribed, prepare the join buttons
+            buttons = []
 
-    buttons = []
+            # Add conditions to check which subscription the user is missing
+            if not sub1 and not sub2 and not sub3 and not sub4:
+                buttons.append(
+                    [
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink1),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
+                    ]
+                )
+            elif sub1 and not sub2 and not sub3 and not sub4:
+                buttons.append(
+                    [
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
+                    ]
+                )
+            elif sub2 and not sub1 and not sub3 and not sub4:
+                buttons.append(
+                    [
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink1),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
+                    ]
+                )
+            elif sub3 and not sub1 and not sub2 and not sub4:
+                buttons.append(
+                    [
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink1),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
+                    ]
+                )
+            elif sub4 and not sub1 and not sub2 and not sub3:
+                buttons.append(
+                    [
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink1),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
+                    ]
+                )
+            elif sub1 and sub2 and not sub3 and not sub4:
+                buttons.append(
+                    [
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
+                    ]
+                )
+            elif sub1 and not sub2 and sub3 and not sub4:
+                buttons.append(
+                    [
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
+                    ]
+                )
+            elif sub1 and not sub2 and not sub3 and sub4:
+                buttons.append(
+                    [
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
+                    ]
+                )
+            elif not sub1 and sub2 and sub3 and not sub4:
+                buttons.append(
+                    [
+                        InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
+                    ]
+                )
 
-    if sub1 and not sub2 and not sub3 and not sub4:
-    buttons.append(
-        [
-            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink),
-        ]
-    )
-elif sub2 and not sub1 and not sub3 and not sub4:
-    buttons.append(
-        [
-            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-        ]
-    )
-elif sub3 and not sub1 and not sub2 and not sub4:
-    buttons.append(
-        [
-            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-        ]
-    )
-elif sub4 and not sub1 and not sub2 and not sub3:
-    buttons.append(
-        [
-            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-        ]
-    )
-elif not sub1 and not sub2 and not sub3 and not sub4:
-    buttons.append(
-        [
-            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink),
-            InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-            InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-            InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-        ]
-    )
-elif sub1 and sub2 and not sub3 and not sub4:
-    buttons.append(
-        [
-            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-            InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-        ]
-    )
-elif sub1 and not sub2 and sub3 and not sub4:
-    buttons.append(
-        [
-            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-            InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-        ]
-    )
-elif sub1 and not sub2 and not sub3 and sub4:
-    buttons.append(
-        [
-            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-            InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-        ]
-    )
-elif not sub1 and sub2 and sub3 and not sub4:
-    buttons.append(
-        [
-            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-        ]
-    )
-# Add a "Try Again" button as before
-try:
-    buttons.append(
-        [
-            InlineKeyboardButton(
-                text='• ᴛʀʏ ᴀɢᴀɪɴ •',
-                url=f"https://t.me/{client.username}?start={message.command[1]}"
-            )
-        ]
-    )
-except IndexError:
-    pass
-
-
+            # Add a "Try Again" button as before
+            try:
+                buttons.append(
+                    [
+                        InlineKeyboardButton(
+                            text='• ᴛʀʏ ᴀɢᴀɪɴ •',
+                            url=f"https://t.me/{client.username}?start={message.command[1]}"
+                        )
+                    ]
+                )
+            except IndexError:
+                pass
 
             # Send the reply with the join buttons
             await message.reply(
