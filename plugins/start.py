@@ -2,7 +2,7 @@ import os
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode, ChatMemberStatus
-from pyrogram.errors import ChatNotFound
+from pyrogram.errors import ChatIdInvalid
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait, UserNotParticipant, RPCError
 from bot import Bot
