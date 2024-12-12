@@ -12,47 +12,6 @@ from config import FSUB_ENABLED, FSUB_CHANNEL  # Ensure FSUB_ENABLED is imported
 from pyrogram.errors import UserNotParticipant, RPCError
 
 
-async def is_subscribed(filter, client, update):
-    global FSUB_ENABLED, FSUB_CHANNEL, ADMINS
-
-    # If Fsub is disabled, allow all users
-    if not FSUB_ENABLED:
-        return True
-
-    user_id = update.from_user.id
-
-    # Admins bypass the Fsub check
-    if user_id in ADMINS:
-        return True
-
-    try:
-        # Check if the user is a member of the FSUB_CHANNEL
-        member = await client.get_chat_member(chat_id=FSUB_CHANNEL, user_id=user_id)
-
-        # Return True if the user is a member, admin, or owner
-        return member.status in [
-            ChatMemberStatus.OWNER,
-            ChatMemberStatus.ADMINISTRATOR,
-            ChatMemberStatus.MEMBER,
-        ]
-
-    except UserNotParticipant:
-        # Handle the case where the user is not part of the channel
-        print(f"User {user_id} is not a participant of {FSUB_CHANNEL}.")
-        return False
-
-    except RPCError as e:
-        # Handle other Telegram API exceptions
-        print(f"RPC error in is_subscribed filter: {e}")
-        return False
-
-    except Exception as e:
-        # Catch any unexpected errors
-        print(f"Error in is_subscribed filter: {e}")
-        return False
-
-# Register the filter
-subscribed = filters.create(is_subscribed)
 
 async def encode(string):
     string_bytes = string.encode("ascii")
