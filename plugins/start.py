@@ -70,144 +70,146 @@ async def start_command(client: Client, message: Message):
 
     # If FSUB is disabled or FSUB_CHANNEL is not set, skip subscription check
     if not FSUB_ENABLED or not FSUB_CHANNEL:
- 
-                pass
+        pass
 
-        # If the command includes base64 encoded string, process it
-        if len(text) > 7:
+    # If the command includes a base64 encoded string, process it
+    if len(text) > 7:
+        try:
+            base64_string = text.split(" ", 1)[1]
+        except IndexError:
+            return  # Return early if the split fails
+
+        string = await decode(base64_string)
+        argument = string.split("-")
+        ids = []
+
+        # Handle different cases of the base64 decoded string
+        if len(argument) == 3:
             try:
-                base64_string = text.split(" ", 1)[1]
-            except:
-                return  # Return early if the split fails
-
-            string = await decode(base64_string)
-            argument = string.split("-")
-            ids = []
-
-            # Handle different cases of the base64 decoded string
-            if len(argument) == 3:
-                try:
-                    start = int(int(argument[1]) / abs(client.db_channel.id))
-                    end = int(int(argument[2]) / abs(client.db_channel.id))
-                    ids = range(start, end + 1) if start <= end else list(range(start, end - 1, -1))
-                except:
-                    return  # Return early if conversion fails
-            elif len(argument) == 2:
-                try:
-                    ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-                except:
-                    return
-
-            temp_msg = await message.reply("Please wait...")
+                start = int(int(argument[1]) / abs(client.db_channel.id))
+                end = int(int(argument[2]) / abs(client.db_channel.id))
+                ids = range(start, end + 1) if start <= end else list(range(start, end - 1, -1))
+            except ValueError:
+                return  # Return early if conversion fails
+        elif len(argument) == 2:
             try:
-                messages = await get_messages(client, ids)
-            except:
-                await message.reply_text("Something went wrong..!")
+                ids = [int(int(argument[1]) / abs(client.db_channel.id))]
+            except ValueError:
                 return
-            await temp_msg.delete()
 
-            track_msgs = []
-            for msg in messages:
-                caption = CUSTOM_CAPTION.format(
+        temp_msg = await message.reply("Please wait...")
+        try:
+            messages = await get_messages(client, ids)
+        except Exception as e:
+            await message.reply_text("Something went wrong..!")
+            print(f"Error fetching messages: {e}")
+            return
+        await temp_msg.delete()
+
+        track_msgs = []
+        for msg in messages:
+            caption = (
+                CUSTOM_CAPTION.format(
                     previouscaption="" if not msg.caption else msg.caption.html,
-                    filename=msg.document.file_name if msg.document else ''
-                ) if bool(CUSTOM_CAPTION) and bool(msg.document) else (msg.caption.html if msg.caption else "")
-
-                reply_markup = None if DISABLE_CHANNEL_BUTTON else msg.reply_markup
-
-                if AUTO_DELETE_TIME and AUTO_DELETE_TIME > 0:
-                    try:
-                        copied_msg_for_deletion = await msg.copy(
-                            chat_id=message.from_user.id,
-                            caption=caption,
-                            parse_mode=ParseMode.HTML,
-                            reply_markup=reply_markup,
-                            protect_content=PROTECT_CONTENT
-                        )
-                        if copied_msg_for_deletion:
-                            track_msgs.append(copied_msg_for_deletion)
-                    except FloodWait as e:
-                        await asyncio.sleep(e.value)
-                        copied_msg_for_deletion = await msg.copy(
-                            chat_id=message.from_user.id,
-                            caption=caption,
-                            parse_mode=ParseMode.HTML,
-                            reply_markup=reply_markup,
-                            protect_content=PROTECT_CONTENT
-                        )
-                        if copied_msg_for_deletion:
-                            track_msgs.append(copied_msg_for_deletion)
-                    except Exception as e:
-                        print(f"Error copying message: {e}")
-
-                else:
-                    try:
-                        await msg.copy(
-                            chat_id=message.from_user.id,
-                            caption=caption,
-                            parse_mode=ParseMode.HTML,
-                            reply_markup=reply_markup,
-                            protect_content=PROTECT_CONTENT
-                        )
-                        await asyncio.sleep(0.5)
-                    except FloodWait as e:
-                        await asyncio.sleep(e.value)
-                        await msg.copy(
-                            chat_id=message.from_user.id,
-                            caption=caption,
-                            parse_mode=ParseMode.HTML,
-                            reply_markup=reply_markup,
-                            protect_content=PROTECT_CONTENT
-                        )
-
-            if track_msgs:
-                delete_data = await client.send_message(
-                    chat_id=message.from_user.id,
-                    text=AUTO_DELETE_MSG.format(time=AUTO_DELETE_TIME)
+                    filename=msg.document.file_name if msg.document else ""
                 )
-                # Schedule the file deletion task after all messages have been copied
-                asyncio.create_task(delete_file(track_msgs, client, delete_data))
+                if CUSTOM_CAPTION and msg.document
+                else (msg.caption.html if msg.caption else "")
+            )
+
+            reply_markup = None if DISABLE_CHANNEL_BUTTON else msg.reply_markup
+
+            if AUTO_DELETE_TIME and AUTO_DELETE_TIME > 0:
+                try:
+                    copied_msg_for_deletion = await msg.copy(
+                        chat_id=message.from_user.id,
+                        caption=caption,
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=reply_markup,
+                        protect_content=PROTECT_CONTENT
+                    )
+                    if copied_msg_for_deletion:
+                        track_msgs.append(copied_msg_for_deletion)
+                except FloodWait as e:
+                    await asyncio.sleep(e.value)
+                    copied_msg_for_deletion = await msg.copy(
+                        chat_id=message.from_user.id,
+                        caption=caption,
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=reply_markup,
+                        protect_content=PROTECT_CONTENT
+                    )
+                    if copied_msg_for_deletion:
+                        track_msgs.append(copied_msg_for_deletion)
+                except Exception as e:
+                    print(f"Error copying message: {e}")
+
             else:
-                print("No messages to track for deletion.")
+                try:
+                    await msg.copy(
+                        chat_id=message.from_user.id,
+                        caption=caption,
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=reply_markup,
+                        protect_content=PROTECT_CONTENT
+                    )
+                    await asyncio.sleep(0.5)
+                except FloodWait as e:
+                    await asyncio.sleep(e.value)
+                    await msg.copy(
+                        chat_id=message.from_user.id,
+                        caption=caption,
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=reply_markup,
+                        protect_content=PROTECT_CONTENT
+                    )
 
-            return  # Early return if we are processing a base64 string
-
-        # Send the reply with the user's information
-        reply_markup = InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton("😊 About Me", callback_data="about"),
-                InlineKeyboardButton("🔒 Close", callback_data="close")
-            ]
-        ])
-
-        if START_PIC:
-            await message.reply_photo(
-                photo=START_PIC,
-                caption=START_MSG.format(
-                    first=message.from_user.first_name,
-                    last=message.from_user.last_name,
-                    username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
-                    mention=message.from_user.mention,
-                    id=message.from_user.id
-                ),
-                reply_markup=reply_markup,
-                quote=True
+        if track_msgs:
+            delete_data = await client.send_message(
+                chat_id=message.from_user.id,
+                text=AUTO_DELETE_MSG.format(time=AUTO_DELETE_TIME)
             )
+            # Schedule the file deletion task after all messages have been copied
+            asyncio.create_task(delete_file(track_msgs, client, delete_data))
         else:
-            await message.reply_text(
-                text=START_MSG.format(
-                    first=message.from_user.first_name,
-                    last=message.from_user.last_name,
-                    username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
-                    mention=message.from_user.mention,
-                    id=message.from_user.id
-                ),
-                reply_markup=reply_markup,
-                disable_web_page_preview=True,
-                quote=True
-            )
+            print("No messages to track for deletion.")
 
-        return
+        return  # Early return if we are processing a base64 string
+
+    # Send the reply with the user's information
+    reply_markup = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("😊 About Me", callback_data="about"),
+            InlineKeyboardButton("🔒 Close", callback_data="close")
+        ]
+    ])
+
+    if START_PIC:
+        await message.reply_photo(
+            photo=START_PIC,
+            caption=START_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name,
+                username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
+                mention=message.from_user.mention,
+                id=message.from_user.id
+            ),
+            reply_markup=reply_markup,
+            quote=True
+        )
+    else:
+        await message.reply_text(
+            text=START_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name,
+                username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
+                mention=message.from_user.mention,
+                id=message.from_user.id
+            ),
+            reply_markup=reply_markup,
+            disable_web_page_preview=True,
+            quote=True
+        )
 
  #=====================================================================================##
  
