@@ -349,7 +349,7 @@ async def start_command(client: Client, message: Message):
  
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
-    global FSUB_CHANNEL
+    global FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
 
     # Use the is_subscribed filter for checking membership
     user_id = message.from_user.id
