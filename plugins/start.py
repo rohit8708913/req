@@ -557,9 +557,6 @@ async def not_joined(client: Client, message: Message):
         reply_markup=InlineKeyboardMarkup(buttons)
     )
 
-except Exception as e:
-    print(f"Error while checking membership: {e}")
-
 #=====================================================================================##
 
 @Bot.on_message(filters.command('fsubstatus') & filters.user(ADMINS))
