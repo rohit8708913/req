@@ -520,3 +520,59 @@ async def toggle_fsub(client: Client, message: Message):
     FSUB_ENABLED = not FSUB_ENABLED
     status = "enabled" if FSUB_ENABLED else "disabled"
     await message.reply(f"Fsub has been {status}.")
+
+
+@Bot.on_message(filters.command('togglefsub1') & filters.user(ADMINS))
+async def toggle_fsub1(client: Client, message: Message):
+    global FSUB_CHANNEL1
+
+    if FSUB_CHANNEL1:
+        FSUB_CHANNEL1 = None
+        status = "disabled"
+    else:
+        FSUB_CHANNEL1 = "Your_Channel_ID_1"  # Replace with the actual channel ID dynamically if needed
+        status = "enabled"
+
+    await message.reply(f"Fsub for Channel 1 has been {status}.")
+
+
+@Bot.on_message(filters.command('togglefsub2') & filters.user(ADMINS))
+async def toggle_fsub2(client: Client, message: Message):
+    global FSUB_CHANNEL2
+
+    if FSUB_CHANNEL2:
+        FSUB_CHANNEL2 = None
+        status = "disabled"
+    else:
+        FSUB_CHANNEL2 = "Your_Channel_ID_2"  # Replace with the actual channel ID dynamically if needed
+        status = "enabled"
+
+    await message.reply(f"Fsub for Channel 2 has been {status}.")
+
+
+@Bot.on_message(filters.command('togglefsub3') & filters.user(ADMINS))
+async def toggle_fsub3(client: Client, message: Message):
+    global FSUB_CHANNEL3
+
+    if FSUB_CHANNEL3:
+        FSUB_CHANNEL3 = None
+        status = "disabled"
+    else:
+        FSUB_CHANNEL3 = "Your_Channel_ID_3"  # Replace with the actual channel ID dynamically if needed
+        status = "enabled"
+
+    await message.reply(f"Fsub for Channel 3 has been {status}.")
+
+
+@Bot.on_message(filters.command('togglefsub4') & filters.user(ADMINS))
+async def toggle_fsub4(client: Client, message: Message):
+    global FSUB_CHANNEL4
+
+    if FSUB_CHANNEL4:
+        FSUB_CHANNEL4 = None
+        status = "disabled"
+    else:
+        FSUB_CHANNEL4 = "Your_Channel_ID_4"  # Replace with the actual channel ID dynamically if needed
+        status = "enabled"
+
+    await message.reply(f"Fsub for Channel 4 has been {status}.")
