@@ -129,3 +129,45 @@ class Bot(Client):
         self.LOGGER(__name__).info("Bot stopped.")
 
 
+@Bot.on_message(filters.command('setfsubid1') & filters.user(ADMINS))
+async def set_fsub_id1(client: Client, message: Message):
+    global FSUB_CHANNEL1
+
+    if len(message.command) != 2:
+        await message.reply("Usage: /setfsubid1 <channel_id>")
+        return
+
+    await set_channel_id(client, message, 1)
+
+
+@Bot.on_message(filters.command('setfsubid2') & filters.user(ADMINS))
+async def set_fsub_id2(client: Client, message: Message):
+    global FSUB_CHANNEL2
+
+    if len(message.command) != 2:
+        await message.reply("Usage: /setfsubid2 <channel_id>")
+        return
+
+    await set_channel_id(client, message, 2)
+
+
+@Bot.on_message(filters.command('setfsubid3') & filters.user(ADMINS))
+async def set_fsub_id3(client: Client, message: Message):
+    global FSUB_CHANNEL3
+
+    if len(message.command) != 2:
+        await message.reply("Usage: /setfsubid3 <channel_id>")
+        return
+
+    await set_channel_id(client, message, 3)
+
+
+@Bot.on_message(filters.command('setfsubid4') & filters.user(ADMINS))
+async def set_fsub_id4(client: Client, message: Message):
+    global FSUB_CHANNEL4
+
+    if len(message.command) != 2:
+        await message.reply("Usage: /setfsubid4 <channel_id>")
+        return
+
+    await set_channel_id(client, message, 4)
