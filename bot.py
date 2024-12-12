@@ -22,7 +22,7 @@ from config import (
 
 # Dynamic Fsub variables
 FSUB_ENABLED = True  # Force subscription enabled by default
-FSUB_CHANNEL = None  # Dynamic channel ID (set via commands)
+FSUB_CHANNEL1 = None  # Dynamic channel ID (set via commands)
 
 
 class Bot(Client):
@@ -47,9 +47,9 @@ class Bot(Client):
         self.uptime = datetime.now()
 
         # Force subscription dynamic setup
-        if FSUB_ENABLED and FSUB_CHANNEL:
+        if FSUB_ENABLED and FSUB_CHANNEL1:
             try:
-                link = (await self.get_chat(FSUB_CHANNEL)).invite_link
+                link = (await self.get_chat(FSUB_CHANNEL1)).invite_link
                 if not link:
                     await self.export_chat_invite_link(FSUB_CHANNEL)
                     link = (await self.get_chat(FSUB_CHANNEL)).invite_link
