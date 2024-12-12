@@ -130,7 +130,7 @@ sub3 = filters.create(is_subscribed3)
 
 #=====================================================================================##
 
-async def is_subscribed4(client, message, message):
+async def is_subscribed4(client, message):
     global FSUB_ENABLED, FSUB_CHANNEL4, ADMINS
 
     if not FSUB_CHANNEL4 or not FSUB_ENABLED:
