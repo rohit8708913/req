@@ -401,7 +401,7 @@ async def not_joined(client: Client, message: Message):
             await start_command(client, message)  # Start after checking subscription for Channel 4
 
     except Exception as e:
-        print(f"Error while checking membership: {e}").   
+        print(f"Error while checking membership: {e}").
         return
 
         # If the user is not subscribed to any channel, prepare the join buttons
