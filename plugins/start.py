@@ -355,23 +355,72 @@ async def not_joined(client: Client, message: Message):
     user_id = message.from_user.id
 
     try:
-        # Check if the user is subscribed using the filter
-        if await is_subscribed(None, client, message):
-            # User is subscribed
+        # Check if the user is subscribed to FSUB_CHANNEL1
+        if await is_subscribed1(None, client, message):
+            # User is subscribed to FSUB_CHANNEL1
             if not await present_user(user_id):
                 try:
                     await add_user(user_id)
                 except Exception as e:
                     print(f"Error adding user: {e}")
-
-            # Proceed with the command
             await start_command(client, message)
-            return  # Return after handling subscription
-        else:
-            # User is not a member of FSUB_CHANNEL, prompt to join
-            invite_link = await client.export_chat_invite_link(FSUB_CHANNEL)
-            buttons = [[InlineKeyboardButton("Join Channel", url=invite_link)]]
+            return  # User is subscribed to FSUB_CHANNEL1, so we return
 
+        # Check if the user is subscribed to FSUB_CHANNEL2
+        elif await is_subscribed2(None, client, message):
+            # User is subscribed to FSUB_CHANNEL2
+            if not await present_user(user_id):
+                try:
+                    await add_user(user_id)
+                except Exception as e:
+                    print(f"Error adding user: {e}")
+            await start_command(client, message)
+            return  # User is subscribed to FSUB_CHANNEL2, so we return
+
+        # Check if the user is subscribed to FSUB_CHANNEL3
+        elif await is_subscribed3(None, client, message):
+            # User is subscribed to FSUB_CHANNEL3
+            if not await present_user(user_id):
+                try:
+                    await add_user(user_id)
+                except Exception as e:
+                    print(f"Error adding user: {e}")
+            await start_command(client, message)
+            return  # User is subscribed to FSUB_CHANNEL3, so we return
+
+        # Check if the user is subscribed to FSUB_CHANNEL4
+        elif await is_subscribed4(None, client, message):
+            # User is subscribed to FSUB_CHANNEL4
+            if not await present_user(user_id):
+                try:
+                    await add_user(user_id)
+                except Exception as e:
+                    print(f"Error adding user: {e}")
+            await start_command(client, message)
+            return  # User is subscribed to FSUB_CHANNEL4, so we return
+
+        else:
+            # User is not subscribed to any of the channels, show the join buttons
+            buttons = []
+
+            # Add join buttons for each channel if not already subscribed
+            if FSUB_CHANNEL1:
+                invite_link1 = await client.export_chat_invite_link(FSUB_CHANNEL1)
+                buttons.append([InlineKeyboardButton("Join Channel 1", url=invite_link1)])
+
+            if FSUB_CHANNEL2:
+                invite_link2 = await client.export_chat_invite_link(FSUB_CHANNEL2)
+                buttons.append([InlineKeyboardButton("Join Channel 2", url=invite_link2)])
+
+            if FSUB_CHANNEL3:
+                invite_link3 = await client.export_chat_invite_link(FSUB_CHANNEL3)
+                buttons.append([InlineKeyboardButton("Join Channel 3", url=invite_link3)])
+
+            if FSUB_CHANNEL4:
+                invite_link4 = await client.export_chat_invite_link(FSUB_CHANNEL4)
+                buttons.append([InlineKeyboardButton("Join Channel 4", url=invite_link4)])
+
+            # Optionally, add a "Try Again" button if a command was provided
             try:
                 buttons.append([
                     InlineKeyboardButton(
@@ -382,6 +431,7 @@ async def not_joined(client: Client, message: Message):
             except IndexError:
                 pass
 
+            # Send the reply with the join buttons
             await message.reply(
                 FORCE_MSG.format(
                     first=message.from_user.first_name or "User",
@@ -392,8 +442,9 @@ async def not_joined(client: Client, message: Message):
                 ),
                 reply_markup=InlineKeyboardMarkup(buttons)
             )
+
     except Exception as e:
-        print(f"Error while checking membership: {e}")       
+        print(f"Error while checking membership: {e}")
 
 #=====================================================================================##
 
