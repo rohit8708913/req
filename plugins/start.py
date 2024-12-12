@@ -26,7 +26,7 @@ async def is_subscribed1(client, filter, update):
     if not FSUB_CHANNEL1 or not FSUB_ENABLED:
         return True
 
-    user_id = message.from_user.id  # Use message here instead of update
+    user_id = update.from_user.id  # Use message here instead of update
 
     # Admins bypass the Fsub check
     if user_id in ADMINS:
@@ -70,7 +70,7 @@ async def is_subscribed2(client, filter, update):
     if not FSUB_CHANNEL2 or not FSUB_ENABLED:
         return True
 
-    user_id = message.from_user.id
+    user_id = update.from_user.id
 
     if user_id in ADMINS:
         return True
@@ -103,7 +103,7 @@ async def is_subscribed3(client, filter, update):
     if not FSUB_CHANNEL3 or not FSUB_ENABLED:
         return True
 
-    user_id = message.from_user.id
+    user_id = update.from_user.id
 
     if user_id in ADMINS:
         return True
@@ -136,7 +136,7 @@ async def is_subscribed4(client, filter, update):
     if not FSUB_CHANNEL4 or not FSUB_ENABLED:
         return True
 
-    user_id = message.from_user.id
+    user_id = update.from_user.id
 
     if user_id in ADMINS:
         return True
