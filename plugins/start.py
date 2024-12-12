@@ -382,46 +382,27 @@ async def not_joined(client: Client, message: Message):
     user_id = message.from_user.id
 
     try:
-        # Check for each subscription (from channel 1 to 4)
-        if await is_subscribed1(client, message):
-            # User is subscribed to FSUB_CHANNEL1
-            if not await present_user(user_id):
-                try:
-                    await add_user(user_id)
-                except Exception as e:
-                    print(f"Error adding user to database: {e}")
-            await start_command(client, message)
-            return  # User is subscribed to at least one channel, so we return
-
+        # Check subscription for each channel
+        if await is_subscribed1(client, message):  # Call with 2 arguments: client and message
+            if not await present_user(message.from_user.id):
+                await add_user(message.from_user.id)
+            await start_command(client, message)  # Start after checking subscription for Channel 1
         elif await is_subscribed2(client, message):
-            # User is subscribed to FSUB_CHANNEL2
-            if not await present_user(user_id):
-                try:
-                    await add_user(user_id)
-                except Exception as e:
-                    print(f"Error adding user to database: {e}")
-            await start_command(client, message)
-            return  # User is subscribed to at least one channel, so we return
-
+            if not await present_user(message.from_user.id):
+                await add_user(message.from_user.id)
+            await start_command(client, message)  # Start after checking subscription for Channel 2
         elif await is_subscribed3(client, message):
-            # User is subscribed to FSUB_CHANNEL3
-            if not await present_user(user_id):
-                try:
-                    await add_user(user_id)
-                except Exception as e:
-                    print(f"Error adding user to database: {e}")
-            await start_command(client, message)
-            return  # User is subscribed to at least one channel, so we return
-
+            if not await present_user(message.from_user.id):
+                await add_user(message.from_user.id)
+            await start_command(client, message)  # Start after checking subscription for Channel 3
         elif await is_subscribed4(client, message):
-            # User is subscribed to FSUB_CHANNEL4
-            if not await present_user(user_id):
-                try:
-                    await add_user(user_id)
-                except Exception as e:
-                    print(f"Error adding user to database: {e}")
-            await start_command(client, message)
-            return  # User is subscribed to at least one channel, so we return
+            if not await present_user(message.from_user.id):
+                await add_user(message.from_user.id)
+            await start_command(client, message)  # Start after checking subscription for Channel 4
+
+    except Exception as e:
+        print(f"Error while checking membership: {e}").   
+        return
 
         # If the user is not subscribed to any channel, prepare the join buttons
         buttons = []
