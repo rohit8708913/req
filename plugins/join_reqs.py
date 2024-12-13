@@ -2,6 +2,7 @@ from database.database import * # Import your channel-specific databases
 from pyrogram import Client, filters
 from pyrogram.types import ChatJoinRequest
 from config import ADMINS
+from bot import Bot
 
 # FSUB_CHANNELs - These are dynamically configurable
 FSUB_CHANNEL1 = "channel_id_1"  # Example Channel 1 ID (set dynamically as needed)
