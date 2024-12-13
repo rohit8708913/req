@@ -380,179 +380,59 @@ async def not_joined(client: Client, message: Message):
 
     user_id = message.from_user.id
 
-    sub1 = await is_subscribed1(client, message)
-    sub2 = await is_subscribed2(client, message)
-    sub3 = await is_subscribed3(client, message)
-    sub4 = await is_subscribed4(client, message)
+    # Check subscriptions
+    try:
+        sub1 = await is_subscribed1(client, message)
+        sub2 = await is_subscribed2(client, message)
+        sub3 = await is_subscribed3(client, message)
+        sub4 = await is_subscribed4(client, message)
 
-    invite_link1 = await client.export_chat_invite_link(FSUB_CHANNEL1)
-    invite_link2 = await client.export_chat_invite_link(FSUB_CHANNEL2)
-    invite_link3 = await client.export_chat_invite_link(FSUB_CHANNEL3)
-    invite_link4 = await client.export_chat_invite_link(FSUB_CHANNEL4)
+        # Generate invite links
+        invite_link1 = await client.export_chat_invite_link(FSUB_CHANNEL1)
+        invite_link2 = await client.export_chat_invite_link(FSUB_CHANNEL2)
+        invite_link3 = await client.export_chat_invite_link(FSUB_CHANNEL3)
+        invite_link4 = await client.export_chat_invite_link(FSUB_CHANNEL4)
 
-try:
-        
+    except Exception as e:
+        # Handle any errors during subscription checks or link generation
+        print(f"Error while checking subscriptions or generating links: {e}")
+        await message.reply("An error occurred. Please try again later.")
+        return
+
+    # Proceed if the user is subscribed to any channel
     if sub1 or sub2 or sub3 or sub4:
         if not await present_user(user_id):
             await add_user(user_id)
         await start_command(client, message)  # Proceed to the start command
         return
 
+    # Generate dynamic buttons for non-subscribers
+    buttons = []
+    join_text = "• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •"
     
-    
-    else:
-        # If the user is not subscribed to any channel, prepare the join buttons
-        buttons = []
+    if not sub1:
+        buttons.append([InlineKeyboardButton(text=join_text, url=invite_link1)])
+    if not sub2:
+        buttons.append([InlineKeyboardButton(text=join_text, url=invite_link2)])
+    if not sub3:
+        buttons.append([InlineKeyboardButton(text=join_text, url=invite_link3)])
+    if not sub4:
+        buttons.append([InlineKeyboardButton(text=join_text, url=invite_link4)])
 
-        # Handle all the possible subscription combinations
-        if not sub1 and not sub2 and not sub3 and not sub4:
-            # User is not subscribed to any channel
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink1),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-                ]
-            )
-        elif sub1 and not sub2 and not sub3 and not sub4:
-            # User is subscribed to Channel 1 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-                ]
-            )
-        elif sub2 and not sub1 and not sub3 and not sub4:
-            # User is subscribed to Channel 2 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink1),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-                ]
-            )
-        elif sub3 and not sub1 and not sub2 and not sub4:
-            # User is subscribed to Channel 3 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink1),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-                ]
-            )
-        elif sub4 and not sub1 and not sub2 and not sub3:
-            # User is subscribed to Channel 4 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink1),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-                ]
-            )
-        elif sub1 and sub2 and not sub3 and not sub4:
-            # User is subscribed to Channel 1 and 2 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-                ]
-            )
-        elif sub1 and not sub2 and sub3 and not sub4:
-            # User is subscribed to Channel 1 and 3 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-                ]
-            )
-        elif sub1 and not sub2 and not sub3 and sub4:
-            # User is subscribed to Channel 1 and 4 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-                ]
-            )
-        elif not sub1 and sub2 and sub3 and not sub4:
-            # User is subscribed to Channel 2 and 3 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-                ]
-            )
-        elif not sub1 and sub2 and not sub3 and sub4:
-            # User is subscribed to Channel 2 and 4 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-                ]
-            )
-        elif not sub1 and not sub2 and sub3 and sub4:
-            # User is subscribed to Channel 3 and 4 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink1),
-                ]
-            )
-        elif sub1 and sub2 and sub3 and not sub4:
-            # User is subscribed to Channel 1, 2, and 3 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-                ]
-            )
-        elif sub1 and sub2 and not sub3 and sub4:
-            # User is subscribed to Channel 1, 2, and 4 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink3),
-                ]
-            )
-        elif sub1 and not sub2 and sub3 and sub4:
-            # User is subscribed to Channel 1, 3, and 4 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-                ]
-            )
-        elif not sub1 and sub2 and sub3 and sub4:
-            # User is subscribed to Channel 2, 3, and 4 only
-            buttons.append(
-                [
-                    InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink1),
-                ]
-            )
-        elif sub1 and sub2 and sub3 and sub4:
-            # User is subscribed to all channels
-            await start_command(client, message)
-            return  # No buttons are needed, user is already subscribed to all channels
+    # Add a "Try Again" button
+    try_again_url = f"https://t.me/{client.username}?start={message.command[1]}" if len(message.command) > 1 else f"https://t.me/{client.username}?start=start"
+    buttons.append(
+        [InlineKeyboardButton(text="• ᴛʀʏ ᴀɢᴀɪɴ •", url=try_again_url)]
+    )
 
-        # Add a "Try Again" button as before
-        try:
-            buttons.append(
-                [
-                    InlineKeyboardButton(
-                        text='• ᴛʀʏ ᴀɢᴀɪɴ •',
-                        url=f"https://t.me/{client.username}?start={message.command[1]}"
-                    )
-                ]
-            )
-        except IndexError:
-            pass
-
-        # Send the reply with the join buttons
-        await message.reply(
-            FORCE_MSG.format(
-                first=message.from_user.first_name or "User",
-                last=message.from_user.last_name or "",
-                username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
-                mention=message.from_user.mention,
-                id=message.from_user.id
-            ),
-            reply_markup=InlineKeyboardMarkup(buttons)
-        )
+    await message.reply(
+        FORCE_MSG.format(
+            first=message.from_user.first_name or "User",
+            username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
+            id=message.from_user.id,
+        ),
+        reply_markup=InlineKeyboardMarkup(buttons)
+    )
 
 #=====================================================================================##
 
