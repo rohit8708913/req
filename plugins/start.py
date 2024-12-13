@@ -19,14 +19,14 @@ FSUB_CHANNEL4 = None  # Default value if not set
 FSUB_ENABLED = True  # Change dynamically using commands
 
     
-async def is_subscribed1(client, filter, update):
+async def is_subscribed1(client, filter, message):
     global FSUB_ENABLED, FSUB_CHANNEL1, ADMINS
 
     # If Fsub is disabled, allow all users
     if not FSUB_CHANNEL1 or not FSUB_ENABLED:
         return True
 
-    user_id = update.from_user.id  # Use message here instead of update
+    user_id = message.from_user.id  # Use message here instead of update
 
     # Admins bypass the Fsub check
     if user_id in ADMINS:
@@ -64,13 +64,13 @@ sub1 = filters.create(is_subscribed1)
 
 #=====================================================================================##
 
-async def is_subscribed2(client, filter, update):
+async def is_subscribed2(client, filter, message):
     global FSUB_ENABLED, FSUB_CHANNEL2, ADMINS
 
     if not FSUB_CHANNEL2 or not FSUB_ENABLED:
         return True
 
-    user_id = update.from_user.id
+    user_id = message.from_user.id
 
     if user_id in ADMINS:
         return True
@@ -97,13 +97,13 @@ sub2 = filters.create(is_subscribed2)
 
 #=====================================================================================##
 
-async def is_subscribed3(client, filter, update):
+async def is_subscribed3(client, filter, message):
     global FSUB_ENABLED, FSUB_CHANNEL3, ADMINS
 
     if not FSUB_CHANNEL3 or not FSUB_ENABLED:
         return True
 
-    user_id = update.from_user.id
+    user_id = message.from_user.id
 
     if user_id in ADMINS:
         return True
@@ -130,13 +130,13 @@ sub3 = filters.create(is_subscribed3)
 
 #=====================================================================================##
 
-async def is_subscribed4(client, filter, update):
+async def is_subscribed4(client, filter, message):
     global FSUB_ENABLED, FSUB_CHANNEL4, ADMINS
 
     if not FSUB_CHANNEL4 or not FSUB_ENABLED:
         return True
 
-    user_id = update.from_user.id
+    user_id = message.from_user.id
 
     if user_id in ADMINS:
         return True
