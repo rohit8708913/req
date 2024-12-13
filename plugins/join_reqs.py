@@ -1,4 +1,10 @@
 from database.database import *
+from pyrogram import Client, filters, enums
+from pyrogram.types import ChatJoinRequest
+from config import ADMINS
+
+db = JoinReqs
+
 
 
 @Client.on_chat_join_request(filters.chat(FSUB_CHANNEL1 if FSUB_CHANNEL1 else None))
