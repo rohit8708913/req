@@ -13,8 +13,8 @@ from helper_func import encode
     'start', 'users', 'broadcast', 'batch', 'genlink', 'stats',
     'fsubstatus1', 'fsubstatus2', 'fsubstatus3', 'fsubstatus4',
     'setfsub1', 'setfsub2', 'setfsub3', 'setfsub4',
-    'togglefsub1', 'togglefsub2', 'togglefsub3', 'togglefsub4'
-]))
+    'togglefsub1', 'togglefsub2', 'togglefsub3', 'togglefsub4',
+    'setmode1', 'setmode2', 'setmode3', 'setmode4']))
 async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Please Wait...!", quote = True)
     try:
