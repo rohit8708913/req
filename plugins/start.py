@@ -126,10 +126,10 @@ async def not_joined(client: Client, message: Message):
                 member = await client.get_chat_member(FSUB_CHANNEL1, user_id)
                 if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
                     invite_link = await client.export_chat_invite_link(FSUB_CHANNEL1)
-                    buttons.append([InlineKeyboardButton("Join Channel 1", url=invite_link)])
+                    buttons.append([InlineKeyboardButton("Join Channel", url=invite_link)])
             except UserNotParticipant:
                 invite_link = await client.export_chat_invite_link(FSUB_CHANNEL1)
-                buttons.append([InlineKeyboardButton("Join Channel 1", url=invite_link)])
+                buttons.append([InlineKeyboardButton("Join Channel", url=invite_link)])
             except Exception as e:
                 print(f"Error checking Channel 1 subscription: {e}")
 
@@ -139,10 +139,10 @@ async def not_joined(client: Client, message: Message):
                 member = await client.get_chat_member(FSUB_CHANNEL2, user_id)
                 if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
                     invite_link = await client.export_chat_invite_link(FSUB_CHANNEL2)
-                    buttons.append([InlineKeyboardButton("Join Channel 2", url=invite_link)])
+                    buttons.append([InlineKeyboardButton("Join Channel", url=invite_link)])
             except UserNotParticipant:
                 invite_link = await client.export_chat_invite_link(FSUB_CHANNEL2)
-                buttons.append([InlineKeyboardButton("Join Channel 2", url=invite_link)])
+                buttons.append([InlineKeyboardButton("Join Channel", url=invite_link)])
             except Exception as e:
                 print(f"Error checking Channel 2 subscription: {e}")
 
@@ -152,10 +152,10 @@ async def not_joined(client: Client, message: Message):
                 member = await client.get_chat_member(FSUB_CHANNEL3, user_id)
                 if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
                     invite_link = await client.export_chat_invite_link(FSUB_CHANNEL3)
-                    buttons.append([InlineKeyboardButton("Join Channel 3", url=invite_link)])
+                    buttons.append([InlineKeyboardButton("Join Channel", url=invite_link)])
             except UserNotParticipant:
                 invite_link = await client.export_chat_invite_link(FSUB_CHANNEL3)
-                buttons.append([InlineKeyboardButton("Join Channel 3", url=invite_link)])
+                buttons.append([InlineKeyboardButton("Join Channel", url=invite_link)])
             except Exception as e:
                 print(f"Error checking Channel 3 subscription: {e}")
 
@@ -165,10 +165,10 @@ async def not_joined(client: Client, message: Message):
                 member = await client.get_chat_member(FSUB_CHANNEL4, user_id)
                 if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
                     invite_link = await client.export_chat_invite_link(FSUB_CHANNEL4)
-                    buttons.append([InlineKeyboardButton("Join Channel 4", url=invite_link)])
+                    buttons.append([InlineKeyboardButton("Join Channel", url=invite_link)])
             except UserNotParticipant:
                 invite_link = await client.export_chat_invite_link(FSUB_CHANNEL4)
-                buttons.append([InlineKeyboardButton("Join Channel 4", url=invite_link)])
+                buttons.append([InlineKeyboardButton("Join Channel", url=invite_link)])
             except Exception as e:
                 print(f"Error checking Channel 4 subscription: {e}")
 
