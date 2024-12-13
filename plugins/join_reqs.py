@@ -1,3 +1,39 @@
+
+@Client.on_chat_join_request(filters.chat(FSUB_CHANNEL1 if FSUB_CHANNEL1 else None))
+@Client.on_chat_join_request(filters.chat(FSUB_CHANNEL2 if FSUB_CHANNEL2 else None))
+@Client.on_chat_join_request(filters.chat(FSUB_CHANNEL3 if FSUB_CHANNEL3 else None))
+@Client.on_chat_join_request(filters.chat(FSUB_CHANNEL4 if FSUB_CHANNEL4 else None))
+async def join_reqs(client, join_req: ChatJoinRequest):
+    # Dynamically select the correct database based on the channel
+    if FSUB_CHANNEL1:
+        db_instance = db1  # Use db1 for Channel 1
+    elif FSUB_CHANNEL2:
+        db_instance = db2  # Use db2 for Channel 2
+    elif FSUB_CHANNEL3:
+        db_instance = db3  # Use db3 for Channel 3
+    elif FSUB_CHANNEL4:
+        db_instance = db4  # Use db4 for Channel 4
+    else:
+        return  # Exit if no valid channel is specified
+
+    # Check if the database is active and add the user
+    if db_instance.is_active():
+        user_id = join_req.from_user.id
+        first_name = join_req.from_user.first_name
+        username = join_req.from_user.username
+        date = join_req.date
+
+        # Add the user to the correct channel's database
+        await db_instance.add_user(
+            user_id=user_id,
+            first_name=first_name,
+            username=username,
+            date=date
+        )
+
+
+
+
 @Bot.on_message(filters.command("total1") & filters.user(ADMINS))
 async def total_users_channel1(client, message):
     db1 = JoinReqs1()
