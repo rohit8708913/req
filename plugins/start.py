@@ -431,4 +431,84 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         await msg.delete()
 #=====================================================================================##
 
+@Bot.on_message(filters.command('fsubstatus1') & filters.user(ADMINS))
+async def fsub_status1(client: Client, message: Message):
+    global FSUB_ENABLED1, FSUB_CHANNEL1
 
+    status = "enabled" if FSUB_ENABLED1 else "disabled"
+    channel_info = f"Channel ID: {FSUB_CHANNEL1 or 'Not Set'}"
+
+    if FSUB_ENABLED1 and FSUB_CHANNEL1:
+        try:
+            invite_link = await client.export_chat_invite_link(FSUB_CHANNEL1)
+            channel_info += f"\nInvite Link: {invite_link}"
+        except Exception as e:
+            channel_info += f"\nInvite Link: Error generating link ({e})"
+    
+    await message.reply(
+        f"**Force Subscription Status for Channel 1:**\n\n"
+        f"**Status:** {status.capitalize()}\n"
+        f"{channel_info}"
+    )
+
+@Bot.on_message(filters.command('fsubstatus2') & filters.user(ADMINS))
+async def fsub_status2(client: Client, message: Message):
+    global FSUB_ENABLED2, FSUB_CHANNEL2
+
+    status = "enabled" if FSUB_ENABLED2 else "disabled"
+    channel_info = f"Channel ID: {FSUB_CHANNEL2 or 'Not Set'}"
+
+    if FSUB_ENABLED2 and FSUB_CHANNEL2:
+        try:
+            invite_link = await client.export_chat_invite_link(FSUB_CHANNEL2)
+            channel_info += f"\nInvite Link: {invite_link}"
+        except Exception as e:
+            channel_info += f"\nInvite Link: Error generating link ({e})"
+    
+    await message.reply(
+        f"**Force Subscription Status for Channel 2:**\n\n"
+        f"**Status:** {status.capitalize()}\n"
+        f"{channel_info}"
+    )
+
+@Bot.on_message(filters.command('fsubstatus3') & filters.user(ADMINS))
+async def fsub_status3(client: Client, message: Message):
+    global FSUB_ENABLED3, FSUB_CHANNEL3
+
+    status = "enabled" if FSUB_ENABLED3 else "disabled"
+    channel_info = f"Channel ID: {FSUB_CHANNEL3 or 'Not Set'}"
+
+    if FSUB_ENABLED3 and FSUB_CHANNEL3:
+        try:
+            invite_link = await client.export_chat_invite_link(FSUB_CHANNEL3)
+            channel_info += f"\nInvite Link: {invite_link}"
+        except Exception as e:
+            channel_info += f"\nInvite Link: Error generating link ({e})"
+    
+    await message.reply(
+        f"**Force Subscription Status for Channel 3:**\n\n"
+        f"**Status:** {status.capitalize()}\n"
+        f"{channel_info}"
+    )
+
+@Bot.on_message(filters.command('fsubstatus4') & filters.user(ADMINS))
+async def fsub_status4(client: Client, message: Message):
+    global FSUB_ENABLED4, FSUB_CHANNEL4
+
+    status = "enabled" if FSUB_ENABLED4 else "disabled"
+    channel_info = f"Channel ID: {FSUB_CHANNEL4 or 'Not Set'}"
+
+    if FSUB_ENABLED4 and FSUB_CHANNEL4:
+        try:
+            invite_link = await client.export_chat_invite_link(FSUB_CHANNEL4)
+            channel_info += f"\nInvite Link: {invite_link}"
+        except Exception as e:
+            channel_info += f"\nInvite Link: Error generating link ({e})"
+    
+    await message.reply(
+        f"**Force Subscription Status for Channel 4:**\n\n"
+        f"**Status:** {status.capitalize()}\n"
+        f"{channel_info}"
+    )
+
+#=====================================================================================##
