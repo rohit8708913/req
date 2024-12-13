@@ -60,12 +60,17 @@ async def is_subscribed3(client, message):
 
 async def is_subscribed4(client, message):
     return await is_subscribed(client, message, FSUB_CHANNEL4)
+
+subscribed1 = filters.create(is_subscribed1)
+subscribed2 = filters.create(is_subscribed2)
+subscribed3 = filters.create(is_subscribed3)
+subscribed4 = filters.create(is_subscribed4)
 #=====================================================================================##
 WAIT_MSG = "<b>Processing ...</b>"
 REPLY_ERROR = "<code>Use this command as a reply to any telegram message without any spaces.</code>"
 #=====================================================================================##
 
-@Bot.on_message(filters.command('start') & sub1 & sub2 & sub3 & sub4)
+@Bot.on_message(filters.command('start') & subscribed1 & subscribed2 & subscribed3 & subscribed4)
 async def start_command(client: Client, message: Message):
     global FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
 
