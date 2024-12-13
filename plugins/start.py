@@ -293,6 +293,10 @@ async def not_joined(client: Client, message: Message):
         invite_link3 = await client.export_chat_invite_link(FSUB_CHANNEL3)
         invite_link4 = await client.export_chat_invite_link(FSUB_CHANNEL4)
 
+    except Exception as e:
+        # Handle any exception in checking subscriptions
+        print(f"Error checking subscriptions: {e}")
+        return
 
     # Proceed if the user is subscribed to any channel
     if sub1 or sub2 or sub3 or sub4:
@@ -301,17 +305,18 @@ async def not_joined(client: Client, message: Message):
         await start_command(client, message)  # Proceed to the start command
         return
 
-    # Generate dynamic buttons for non-subscribers
+    # Generate dynamic buttons based on the enabled subscriptions
     buttons = []
     join_text = "• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •"
     
-    if not sub1:
+    # Check and add buttons only for the channels that are enabled and the user hasn't joined
+    if FSUB_CHANNEL1 and not sub1:
         buttons.append([InlineKeyboardButton(text=join_text, url=invite_link1)])
-    if not sub2:
+    if FSUB_CHANNEL2 and not sub2:
         buttons.append([InlineKeyboardButton(text=join_text, url=invite_link2)])
-    if not sub3:
+    if FSUB_CHANNEL3 and not sub3:
         buttons.append([InlineKeyboardButton(text=join_text, url=invite_link3)])
-    if not sub4:
+    if FSUB_CHANNEL4 and not sub4:
         buttons.append([InlineKeyboardButton(text=join_text, url=invite_link4)])
 
     # Add a "Try Again" button
