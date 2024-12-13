@@ -19,147 +19,47 @@ FSUB_CHANNEL4 = None  # Default value if not set
 FSUB_ENABLED = True  # Change dynamically using commands
 
     
-async def is_subscribed1(client, message):
-    global FSUB_ENABLED, FSUB_CHANNEL1, ADMINS
+async def is_subscribed(client, message, channel_id):
+    global FSUB_ENABLED, ADMINS
 
-    # If Fsub is disabled, allow all users
-    if not FSUB_CHANNEL1 or not FSUB_ENABLED:
+    # If Fsub is disabled or channel_id is not set, allow all users
+    if not channel_id or not FSUB_ENABLED:
         return True
 
-    user_id = message.from_user.id  # Use message here instead of update
+    user_id = message.from_user.id
 
     # Admins bypass the Fsub check
     if user_id in ADMINS:
         return True
 
     try:
-        # Check if the user is a member of the FSUB_CHANNEL1
-        member1 = await client.get_chat_member(chat_id=FSUB_CHANNEL1, user_id=user_id)
-
-        # Return True if the user is a member, admin, or owner
-        return member1.status in [
+        member = await client.get_chat_member(chat_id=channel_id, user_id=user_id)
+        return member.status in [
             ChatMemberStatus.OWNER,
             ChatMemberStatus.ADMINISTRATOR,
             ChatMemberStatus.MEMBER,
         ]
-
     except UserNotParticipant:
-        # Handle the case where the user is not part of the channel
-        print(f"User {user_id} is not a participant of {FSUB_CHANNEL1}.")
+        print(f"User {user_id} is not a participant of {channel_id}.")
         return False
-
     except RPCError as e:
-        # Handle other Telegram API exceptions
         print(f"RPC error in is_subscribed filter: {e}")
         return False
-
     except Exception as e:
-        # Catch any unexpected errors
         print(f"Error in is_subscribed filter: {e}")
         return False
 
-# Register the filter
-sub1 = filters.create(is_subscribed1)
-
-
-#=====================================================================================##
+async def is_subscribed1(client, message):
+    return await is_subscribed(client, message, FSUB_CHANNEL1)
 
 async def is_subscribed2(client, message):
-    global FSUB_ENABLED, FSUB_CHANNEL2, ADMINS
-
-    if not FSUB_CHANNEL2 or not FSUB_ENABLED:
-        return True
-
-    user_id = message.from_user.id
-
-    if user_id in ADMINS:
-        return True
-
-    try:
-        member2 = await client.get_chat_member(chat_id=FSUB_CHANNEL2, user_id=user_id)
-        return member2.status in [
-            ChatMemberStatus.OWNER,
-            ChatMemberStatus.ADMINISTRATOR,
-            ChatMemberStatus.MEMBER,
-        ]
-    except UserNotParticipant:
-        print(f"User {user_id} is not a participant of {FSUB_CHANNEL2}.")
-        return False
-    except RPCError as e:
-        print(f"RPC error in is_subscribed filter: {e}")
-        return False
-    except Exception as e:
-        print(f"Error in is_subscribed filter: {e}")
-        return False
-
-# Register the filter
-sub2 = filters.create(is_subscribed2)
-
-#=====================================================================================##
+    return await is_subscribed(client, message, FSUB_CHANNEL2)
 
 async def is_subscribed3(client, message):
-    global FSUB_ENABLED, FSUB_CHANNEL3, ADMINS
-
-    if not FSUB_CHANNEL3 or not FSUB_ENABLED:
-        return True
-
-    user_id = message.from_user.id
-
-    if user_id in ADMINS:
-        return True
-
-    try:
-        member3 = await client.get_chat_member(chat_id=FSUB_CHANNEL3, user_id=user_id)
-        return member3.status in [
-            ChatMemberStatus.OWNER,
-            ChatMemberStatus.ADMINISTRATOR,
-            ChatMemberStatus.MEMBER,
-        ]
-    except UserNotParticipant:
-        print(f"User {user_id} is not a participant of {FSUB_CHANNEL3}.")
-        return False
-    except RPCError as e:
-        print(f"RPC error in is_subscribed filter: {e}")
-        return False
-    except Exception as e:
-        print(f"Error in is_subscribed filter: {e}")
-        return False
-
-# Register the filter
-sub3 = filters.create(is_subscribed3)
-
-#=====================================================================================##
+    return await is_subscribed(client, message, FSUB_CHANNEL3)
 
 async def is_subscribed4(client, message):
-    global FSUB_ENABLED, FSUB_CHANNEL4, ADMINS
-
-    if not FSUB_CHANNEL4 or not FSUB_ENABLED:
-        return True
-
-    user_id = message.from_user.id
-
-    if user_id in ADMINS:
-        return True
-
-    try:
-        member4 = await client.get_chat_member(chat_id=FSUB_CHANNEL4, user_id=user_id)
-        return member4.status in [
-            ChatMemberStatus.OWNER,
-            ChatMemberStatus.ADMINISTRATOR,
-            ChatMemberStatus.MEMBER,
-        ]
-    except UserNotParticipant:
-        print(f"User {user_id} is not a participant of {FSUB_CHANNEL4}.")
-        return False
-    except RPCError as e:
-        print(f"RPC error in is_subscribed filter: {e}")
-        return False
-    except Exception as e:
-        print(f"Error in is_subscribed filter: {e}")
-        return False
-
-# Register the filter
-sub4 = filters.create(is_subscribed4)
+    return await is_subscribed(client, message, FSUB_CHANNEL4)
 #=====================================================================================##
 WAIT_MSG = "<b>Processing ...</b>"
 REPLY_ERROR = "<code>Use this command as a reply to any telegram message without any spaces.</code>"
@@ -393,11 +293,6 @@ async def not_joined(client: Client, message: Message):
         invite_link3 = await client.export_chat_invite_link(FSUB_CHANNEL3)
         invite_link4 = await client.export_chat_invite_link(FSUB_CHANNEL4)
 
-    except Exception as e:
-        # Handle any errors during subscription checks or link generation
-        print(f"Error while checking subscriptions or generating links: {e}")
-        await message.reply("An error occurred. Please try again later.")
-        return
 
     # Proceed if the user is subscribed to any channel
     if sub1 or sub2 or sub3 or sub4:
