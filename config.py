@@ -8,7 +8,7 @@ from logging.handlers import RotatingFileHandler
 load_dotenv()
 
 #Bot token @Botfather
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7382577497:AAFlYiO1PC9PwRJwc7srQhp0ad_9RUU_CA8")
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7382577497:AAE7C5OYp3l32laltWLdAKUGAXr1Wuu1sRA")
 
 #Your API ID from my.telegram.org
 APP_ID = int(os.environ.get("APP_ID", "22469064"))
@@ -23,7 +23,7 @@ CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002201572719"))
 OWNER_ID = int(os.environ.get("OWNER_ID", "7328629001"))
 
 #Port
-PORT = os.environ.get("PORT", "8099")
+PORT = os.environ.get("PORT", "8100")
 
 #Database 
 DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://nshubh345:1FmseyW0TKaWNMNo@cluster0.pgewb.mongodb.net/?retryWrites=true&w=majority")
@@ -38,7 +38,7 @@ START_PIC = os.environ.get("START_PIC","")
 START_MSG = os.environ.get("START_MESSAGE", "Hello {first}\n\nI can store private files in Specified Channel and other users can access it from special link.")
 try:
     ADMINS=[]
-    for x in (os.environ.get("ADMINS", "").split()):
+    for x in (os.environ.get("ADMINS", "6955387260").split()):
         ADMINS.append(int(x))
 except ValueError:
         raise Exception("Your Admins list does not contain valid integers.")
