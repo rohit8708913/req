@@ -57,6 +57,7 @@ class JoinReqsBase:
         """Add a user to the database."""
         col = self.get_collection()
         if not col:
+            print(f"Error: {user_id} not added. Collection not found.")
             return
         try:
             await col.insert_one({
