@@ -50,7 +50,7 @@ class Bot(Client):
         self.uptime = datetime.now()
 
         # Force subscription dynamic setup for all channels separately
-        if FSUB_ENABLED and FSUB_CHANNEL1:
+        if FSUB_ENABLED1 and FSUB_CHANNEL1:
             try:
                 link = (await self.get_chat(FSUB_CHANNEL1)).invite_link
                 if not link:
@@ -63,7 +63,7 @@ class Bot(Client):
                 self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL1 ({FSUB_CHANNEL1}) and ensure the bot is admin with invite permissions.")
                 sys.exit()
 
-        if FSUB_ENABLED and FSUB_CHANNEL2:
+        if FSUB_ENABLED2 and FSUB_CHANNEL2:
             try:
                 link = (await self.get_chat(FSUB_CHANNEL2)).invite_link
                 if not link:
@@ -76,7 +76,7 @@ class Bot(Client):
                 self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL2 ({FSUB_CHANNEL2}) and ensure the bot is admin with invite permissions.")
                 sys.exit()
 
-        if FSUB_ENABLED and FSUB_CHANNEL3:
+        if FSUB_ENABLED3 and FSUB_CHANNEL3:
             try:
                 link = (await self.get_chat(FSUB_CHANNEL3)).invite_link
                 if not link:
@@ -89,7 +89,7 @@ class Bot(Client):
                 self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL3 ({FSUB_CHANNEL3}) and ensure the bot is admin with invite permissions.")
                 sys.exit()
 
-        if FSUB_ENABLED and FSUB_CHANNEL4:
+        if FSUB_ENABLED4 and FSUB_CHANNEL4:
             try:
                 link = (await self.get_chat(FSUB_CHANNEL4)).invite_link
                 if not link:
