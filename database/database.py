@@ -4,6 +4,7 @@ import pymongo, os
 from config import DB_URI, DB_NAME
 import motor.motor_asyncio
 from config import JOIN_REQS_DB
+from pyrogram.types import ChatJoinRequest
 
 dbclient = pymongo.MongoClient(DB_URI)
 database = dbclient[DB_NAME]
