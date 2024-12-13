@@ -314,14 +314,31 @@ async def toggle_fsub4(client: Client, message: Message):
 @Bot.on_message(filters.command('start') & subscribed1 & subscribed2 & subscribed3 & subscribed4)
 async def start_command(client: Client, message: Message):
     global FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
+    global FSUB_ENABLED1, FSUB_ENABLED2, FSUB_ENABLED3, FSUB_ENABLED4
 
     user_id = message.from_user.id
     text = message.text
 
-    # If FSUB is disabled or FSUB_CHANNEL is not set, skip subscription check
-    if not FSUB_ENABLED1 or not FSUB_CHANNEL1 or not FSUB_ENABLED2 or not FSUB_CHANNEL2 or not FSUB_ENABLED3 or not FSUB_CHANNEL3 or not FSUB_ENABLED4 or not FSUB_CHANNEL4:
+    # Check subscription status for each channel
+    if (
+        (FSUB_ENABLED1 and FSUB_CHANNEL1 and not await is_subscribed1(None, client, message)) or
+        (FSUB_ENABLED2 and FSUB_CHANNEL2 and not await is_subscribed2(None, client, message)) or
+        (FSUB_ENABLED3 and FSUB_CHANNEL3 and not await is_subscribed3(None, client, message)) or
+        (FSUB_ENABLED4 and FSUB_CHANNEL4 and not await is_subscribed4(None, client, message))
+    ):
+        await not_joined(client, message)
+        return
+
+    # If FSUB is disabled or not set for all channels, skip subscription check
+    if not any([
+        FSUB_ENABLED1 and FSUB_CHANNEL1,
+        FSUB_ENABLED2 and FSUB_CHANNEL2,
+        FSUB_ENABLED3 and FSUB_CHANNEL3,
+        FSUB_ENABLED4 and FSUB_CHANNEL4
+    ]):
         pass
 
+    
     # If the command includes a base64 encoded string, process it
     if len(text) > 7:
         try:
