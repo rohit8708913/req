@@ -54,58 +54,50 @@ class Bot(Client):
         usr_bot_me = await self.get_me()
         self.uptime = datetime.now()
 
-        # Force subscription dynamic setup for all channels separately
-        if FSUB_ENABLED1 and FSUB_CHANNEL1:
+ 
+# Force subscription dynamic setup for all channels separately
+async def setup_fsub_invite_links(self):
+    # Helper function for invite link setup
+    async def setup_channel_invite_link(channel_id, channel_enabled, db_instance, channel_name):
+        if channel_enabled and channel_id:
             try:
-                link = (await self.get_chat(FSUB_CHANNEL1)).invite_link
-                if not link:
-                    await self.export_chat_invite_link(FSUB_CHANNEL1)
-                    link = (await self.get_chat(FSUB_CHANNEL1)).invite_link
-                self.invitelink1 = link
+                # Get FSUB mode for the channel
+                mode = await db_instance.get_fsub_mode(channel_id)
+
+                if mode == "direct":  # Direct mode: Generate standard invite link
+                    link = (await self.get_chat(channel_id)).invite_link
+                    if not link:
+                        await self.export_chat_invite_link(channel_id)
+                        link = (await self.get_chat(channel_id)).invite_link
+                    self.LOGGER(__name__).info(f"Direct invite link for {channel_name}: {link}")
+                    return link
+
+                elif mode == "request":  # Request mode: Generate join request link
+                    link = (await self.create_chat_invite_link(chat_id=channel_id, creates_join_request=True)).invite_link
+                    self.LOGGER(__name__).info(f"Join request invite link for {channel_name}: {link}")
+                    return link
+
             except Exception as e:
                 self.LOGGER(__name__).warning(e)
-                self.LOGGER(__name__).warning("Failed to export invite link for Fsub channel 1!")
-                self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL1 ({FSUB_CHANNEL1}) and ensure the bot is admin with invite permissions.")
+                self.LOGGER(__name__).warning(f"Failed to export invite link for {channel_name}!")
+                self.LOGGER(__name__).warning(
+                    f"Check {channel_name} ({channel_id}) and ensure the bot is admin with invite permissions."
+                )
                 sys.exit()
 
-        if FSUB_ENABLED2 and FSUB_CHANNEL2:
-            try:
-                link = (await self.get_chat(FSUB_CHANNEL2)).invite_link
-                if not link:
-                    await self.export_chat_invite_link(FSUB_CHANNEL2)
-                    link = (await self.get_chat(FSUB_CHANNEL2)).invite_link
-                self.invitelink2 = link
-            except Exception as e:
-                self.LOGGER(__name__).warning(e)
-                self.LOGGER(__name__).warning("Failed to export invite link for Fsub channel 2!")
-                self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL2 ({FSUB_CHANNEL2}) and ensure the bot is admin with invite permissions.")
-                sys.exit()
+    # Setup invite links for all FSUB channels
+    if FSUB_ENABLED1 and FSUB_CHANNEL1:
+        self.invitelink1 = await setup_channel_invite_link(FSUB_CHANNEL1, FSUB_ENABLED1, db1, "FSUB_CHANNEL1")
 
-        if FSUB_ENABLED3 and FSUB_CHANNEL3:
-            try:
-                link = (await self.get_chat(FSUB_CHANNEL3)).invite_link
-                if not link:
-                    await self.export_chat_invite_link(FSUB_CHANNEL3)
-                    link = (await self.get_chat(FSUB_CHANNEL3)).invite_link
-                self.invitelink3 = link
-            except Exception as e:
-                self.LOGGER(__name__).warning(e)
-                self.LOGGER(__name__).warning("Failed to export invite link for Fsub channel 3!")
-                self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL3 ({FSUB_CHANNEL3}) and ensure the bot is admin with invite permissions.")
-                sys.exit()
+    if FSUB_ENABLED2 and FSUB_CHANNEL2:
+        self.invitelink2 = await setup_channel_invite_link(FSUB_CHANNEL2, FSUB_ENABLED2, db2, "FSUB_CHANNEL2")
 
-        if FSUB_ENABLED4 and FSUB_CHANNEL4:
-            try:
-                link = (await self.get_chat(FSUB_CHANNEL4)).invite_link
-                if not link:
-                    await self.export_chat_invite_link(FSUB_CHANNEL4)
-                    link = (await self.get_chat(FSUB_CHANNEL4)).invite_link
-                self.invitelink4 = link
-            except Exception as e:
-                self.LOGGER(__name__).warning(e)
-                self.LOGGER(__name__).warning("Failed to export invite link for Fsub channel 4!")
-                self.LOGGER(__name__).warning(f"Check FSUB_CHANNEL4 ({FSUB_CHANNEL4}) and ensure the bot is admin with invite permissions.")
-                sys.exit()
+    if FSUB_ENABLED3 and FSUB_CHANNEL3:
+        self.invitelink3 = await setup_channel_invite_link(FSUB_CHANNEL3, FSUB_ENABLED3, db3, "FSUB_CHANNEL3")
+
+    if FSUB_ENABLED4 and FSUB_CHANNEL4:
+        self.invitelink4 = await setup_channel_invite_link(FSUB_CHANNEL4, FSUB_ENABLED4, db4, "FSUB_CHANNEL4")
+
 
         # Validate DB channel access
         try:
