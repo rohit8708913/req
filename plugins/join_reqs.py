@@ -3,23 +3,23 @@ from pyrogram import Client, filters, enums
 from pyrogram.types import ChatJoinRequest
 from config import ADMINS
 
-db = JoinReqs
 
 
 
-@Client.on_chat_join_request(filters.chat(FSUB_CHANNEL1 if FSUB_CHANNEL1 else None))
-@Client.on_chat_join_request(filters.chat(FSUB_CHANNEL2 if FSUB_CHANNEL2 else None))
-@Client.on_chat_join_request(filters.chat(FSUB_CHANNEL3 if FSUB_CHANNEL3 else None))
-@Client.on_chat_join_request(filters.chat(FSUB_CHANNEL4 if FSUB_CHANNEL4 else None))
+
+
+# This function will handle join requests for all dynamically configured FSUB_CHANNELs
+@Client.on_chat_join_request(filters.chat(lambda x: x.id in [FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4]))
 async def join_reqs(client, join_req: ChatJoinRequest):
-    # Dynamically select the correct database based on the channel
-    if FSUB_CHANNEL1:
+
+    # Determine the channel from which the user is trying to join
+    if join_req.chat.id == FSUB_CHANNEL1:
         db_instance = db1  # Use db1 for Channel 1
-    elif FSUB_CHANNEL2:
+    elif join_req.chat.id == FSUB_CHANNEL2:
         db_instance = db2  # Use db2 for Channel 2
-    elif FSUB_CHANNEL3:
+    elif join_req.chat.id == FSUB_CHANNEL3:
         db_instance = db3  # Use db3 for Channel 3
-    elif FSUB_CHANNEL4:
+    elif join_req.chat.id == FSUB_CHANNEL4:
         db_instance = db4  # Use db4 for Channel 4
     else:
         return  # Exit if no valid channel is specified
@@ -38,7 +38,6 @@ async def join_reqs(client, join_req: ChatJoinRequest):
             username=username,
             date=date
         )
-
 
 
 
