@@ -20,12 +20,17 @@ from config import (
     ADMINS,
 )
 
-# Dynamic Fsub variables for 4 channels
-FSUB_ENABLED = True  # Force subscription enabled by default
-FSUB_CHANNEL1 = None  # Dynamic channel ID (set via commands)
+FSUB_CHANNEL1 = None
+FSUB_ENABLED1 = True
+
 FSUB_CHANNEL2 = None
+FSUB_ENABLED2 = True
+
 FSUB_CHANNEL3 = None
+FSUB_ENABLED3 = True
+
 FSUB_CHANNEL4 = None
+FSUB_ENABLED4 = True
 
 
 class Bot(Client):
