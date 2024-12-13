@@ -23,89 +23,121 @@ FSUB_ENABLED3 = True
 FSUB_CHANNEL4 = None
 FSUB_ENABLED4 = True
 
-async def is_subscribed1(_, client: Client, update: Message):
+
+
+
+
+async def is_subscribed1(_, client, update: Message):
     if not FSUB_ENABLED1 or not FSUB_CHANNEL1:
+        return True  # No subscription requirement if FSUB is disabled or channel is not set
+
+    # Get the FSUB mode for Channel 1 (direct or request)
+    db = JoinReqs()
+    mode = await db.get_fsub_mode(FSUB_CHANNEL1)
+
+    if mode == "direct":
+        try:
+            member = await client.get_chat_member(chat_id=FSUB_CHANNEL1, user_id=update.from_user.id)
+            return member.status in [
+                ChatMemberStatus.OWNER,
+                ChatMemberStatus.ADMINISTRATOR,
+                ChatMemberStatus.MEMBER,
+            ]
+        except UserNotParticipant:
+            return False  # User is not subscribed
+        except Exception as e:
+            print(f"Error checking subscription for Channel 1: {e}")
+            return False
+    elif mode == "request":
+        # In "request" mode, accept all users without checking membership
         return True
-
-    try:
-        member = await client.get_chat_member(chat_id=FSUB_CHANNEL1, user_id=update.from_user.id)
-        return member.status in [
-            ChatMemberStatus.OWNER,
-            ChatMemberStatus.ADMINISTRATOR,
-            ChatMemberStatus.MEMBER,
-        ]
-    except UserNotParticipant:
-        return False
-    except Exception as e:
-        print(f"Error checking subscription for Channel 1: {e}")
-        return False
-
 
 subscribed1 = filters.create(is_subscribed1)
 
 #=====================================================================================##
 
-async def is_subscribed2(_, client: Client, update: Message):
+async def is_subscribed2(_, client, update: Message):
     if not FSUB_ENABLED2 or not FSUB_CHANNEL2:
+        return True  # No subscription requirement if FSUB is disabled or channel is not set
+
+    # Get the FSUB mode for Channel 2 (direct or request)
+    db = JoinReqs()
+    mode = await db.get_fsub_mode(FSUB_CHANNEL2)
+
+    if mode == "direct":
+        try:
+            member = await client.get_chat_member(chat_id=FSUB_CHANNEL2, user_id=update.from_user.id)
+            return member.status in [
+                ChatMemberStatus.OWNER,
+                ChatMemberStatus.ADMINISTRATOR,
+                ChatMemberStatus.MEMBER,
+            ]
+        except UserNotParticipant:
+            return False  # User is not subscribed
+        except Exception as e:
+            print(f"Error checking subscription for Channel 2: {e}")
+            return False
+    elif mode == "request":
+        # In "request" mode, accept all users without checking membership
         return True
-
-    try:
-        member = await client.get_chat_member(chat_id=FSUB_CHANNEL2, user_id=update.from_user.id)
-        return member.status in [
-            ChatMemberStatus.OWNER,
-            ChatMemberStatus.ADMINISTRATOR,
-            ChatMemberStatus.MEMBER,
-        ]
-    except UserNotParticipant:
-        return False
-    except Exception as e:
-        print(f"Error checking subscription for Channel 2: {e}")
-        return False
-
 
 subscribed2 = filters.create(is_subscribed2)
 
 #=====================================================================================##
 
-async def is_subscribed3(_, client: Client, update: Message):
+async def is_subscribed3(_, client, update: Message):
     if not FSUB_ENABLED3 or not FSUB_CHANNEL3:
+        return True  # No subscription requirement if FSUB is disabled or channel is not set
+
+    # Get the FSUB mode for Channel 3 (direct or request)
+    db = JoinReqs()
+    mode = await db.get_fsub_mode(FSUB_CHANNEL3)
+
+    if mode == "direct":
+        try:
+            member = await client.get_chat_member(chat_id=FSUB_CHANNEL3, user_id=update.from_user.id)
+            return member.status in [
+                ChatMemberStatus.OWNER,
+                ChatMemberStatus.ADMINISTRATOR,
+                ChatMemberStatus.MEMBER,
+            ]
+        except UserNotParticipant:
+            return False  # User is not subscribed
+        except Exception as e:
+            print(f"Error checking subscription for Channel 3: {e}")
+            return False
+    elif mode == "request":
+        # In "request" mode, accept all users without checking membership
         return True
-
-    try:
-        member = await client.get_chat_member(chat_id=FSUB_CHANNEL3, user_id=update.from_user.id)
-        return member.status in [
-            ChatMemberStatus.OWNER,
-            ChatMemberStatus.ADMINISTRATOR,
-            ChatMemberStatus.MEMBER,
-        ]
-    except UserNotParticipant:
-        return False
-    except Exception as e:
-        print(f"Error checking subscription for Channel 3: {e}")
-        return False
-
 
 subscribed3 = filters.create(is_subscribed3)
 
 #=====================================================================================##
 
-async def is_subscribed4(_, client: Client, update: Message):
+async def is_subscribed4(_, client, update: Message):
     if not FSUB_ENABLED4 or not FSUB_CHANNEL4:
+        return True  # No subscription requirement if FSUB is disabled or channel is not set
+
+    # Get the FSUB mode for Channel 4 (direct or request)
+    db = JoinReqs()
+    mode = await db.get_fsub_mode(FSUB_CHANNEL4)
+
+    if mode == "direct":
+        try:
+            member = await client.get_chat_member(chat_id=FSUB_CHANNEL4, user_id=update.from_user.id)
+            return member.status in [
+                ChatMemberStatus.OWNER,
+                ChatMemberStatus.ADMINISTRATOR,
+                ChatMemberStatus.MEMBER,
+            ]
+        except UserNotParticipant:
+            return False  # User is not subscribed
+        except Exception as e:
+            print(f"Error checking subscription for Channel 4: {e}")
+            return False
+    elif mode == "request":
+        # In "request" mode, accept all users without checking membership
         return True
-
-    try:
-        member = await client.get_chat_member(chat_id=FSUB_CHANNEL4, user_id=update.from_user.id)
-        return member.status in [
-            ChatMemberStatus.OWNER,
-            ChatMemberStatus.ADMINISTRATOR,
-            ChatMemberStatus.MEMBER,
-        ]
-    except UserNotParticipant:
-        return False
-    except Exception as e:
-        print(f"Error checking subscription for Channel 4: {e}")
-        return False
-
 
 subscribed4 = filters.create(is_subscribed4)
 
