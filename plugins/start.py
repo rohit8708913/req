@@ -110,6 +110,95 @@ async def is_subscribed4(_, client: Client, update: Message):
 subscribed4 = filters.create(is_subscribed4)
 
 #=====================================================================================##
+
+@Bot.on_message(filters.command('start') & filters.private)
+async def not_joined(client: Client, message: Message):
+    global FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
+    global FSUB_ENABLED1, FSUB_ENABLED2, FSUB_ENABLED3, FSUB_ENABLED4
+
+    user_id = message.from_user.id
+    buttons = []
+
+    try:
+        # Check Channel 1
+        if FSUB_ENABLED1 and FSUB_CHANNEL1:
+            try:
+                member = await client.get_chat_member(FSUB_CHANNEL1, user_id)
+                if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
+                    invite_link = await client.export_chat_invite_link(FSUB_CHANNEL1)
+                    buttons.append([InlineKeyboardButton("Join Channel 1", url=invite_link)])
+            except UserNotParticipant:
+                invite_link = await client.export_chat_invite_link(FSUB_CHANNEL1)
+                buttons.append([InlineKeyboardButton("Join Channel 1", url=invite_link)])
+            except Exception as e:
+                print(f"Error checking Channel 1 subscription: {e}")
+
+        # Check Channel 2
+        if FSUB_ENABLED2 and FSUB_CHANNEL2:
+            try:
+                member = await client.get_chat_member(FSUB_CHANNEL2, user_id)
+                if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
+                    invite_link = await client.export_chat_invite_link(FSUB_CHANNEL2)
+                    buttons.append([InlineKeyboardButton("Join Channel 2", url=invite_link)])
+            except UserNotParticipant:
+                invite_link = await client.export_chat_invite_link(FSUB_CHANNEL2)
+                buttons.append([InlineKeyboardButton("Join Channel 2", url=invite_link)])
+            except Exception as e:
+                print(f"Error checking Channel 2 subscription: {e}")
+
+        # Check Channel 3
+        if FSUB_ENABLED3 and FSUB_CHANNEL3:
+            try:
+                member = await client.get_chat_member(FSUB_CHANNEL3, user_id)
+                if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
+                    invite_link = await client.export_chat_invite_link(FSUB_CHANNEL3)
+                    buttons.append([InlineKeyboardButton("Join Channel 3", url=invite_link)])
+            except UserNotParticipant:
+                invite_link = await client.export_chat_invite_link(FSUB_CHANNEL3)
+                buttons.append([InlineKeyboardButton("Join Channel 3", url=invite_link)])
+            except Exception as e:
+                print(f"Error checking Channel 3 subscription: {e}")
+
+        # Check Channel 4
+        if FSUB_ENABLED4 and FSUB_CHANNEL4:
+            try:
+                member = await client.get_chat_member(FSUB_CHANNEL4, user_id)
+                if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
+                    invite_link = await client.export_chat_invite_link(FSUB_CHANNEL4)
+                    buttons.append([InlineKeyboardButton("Join Channel 4", url=invite_link)])
+            except UserNotParticipant:
+                invite_link = await client.export_chat_invite_link(FSUB_CHANNEL4)
+                buttons.append([InlineKeyboardButton("Join Channel 4", url=invite_link)])
+            except Exception as e:
+                print(f"Error checking Channel 4 subscription: {e}")
+
+        # Add "Try Again" button if any channel is not joined
+        if buttons:
+            buttons.append([
+                InlineKeyboardButton(
+                    "Try Again",
+                    url=f"https://t.me/{client.username}?start={message.command[1]}" if len(message.command) > 1 else f"https://t.me/{client.username}?start=start"
+                )
+            ])
+
+            await message.reply(
+                FORCE_MSG.format(
+                    first=message.from_user.first_name or "User",
+                    last=message.from_user.last_name or "",
+                    username=f"@{message.from_user.username}" if message.from_user.username else "N/A",
+                    mention=message.from_user.mention,
+                    id=message.from_user.id
+                ),
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+            return
+
+        # If all channels are joined, process the start command
+        await start_command(client, message)
+
+    except Exception as e:
+        print(f"Error in not_joined function: {e}")
+#=====================================================================================##
 @Bot.on_message(filters.command('setfsub1') & filters.user(ADMINS))
 async def set_fsub1(client: Client, message: Message):
     global FSUB_CHANNEL1
@@ -512,3 +601,4 @@ async def fsub_status4(client: Client, message: Message):
     )
 
 #=====================================================================================##
+
