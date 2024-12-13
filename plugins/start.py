@@ -12,16 +12,16 @@ from database.database import add_user, del_user, full_userbase, present_user
 
 #=====================================================================================##
 FSUB_CHANNEL1 = None
-FSUB_ENABLED1 = False
+FSUB_ENABLED1 = True
 
 FSUB_CHANNEL2 = None
-FSUB_ENABLED2 = False
+FSUB_ENABLED2 = True
 
 FSUB_CHANNEL3 = None
-FSUB_ENABLED3 = False
+FSUB_ENABLED3 = True
 
 FSUB_CHANNEL4 = None
-FSUB_ENABLED4 = False
+FSUB_ENABLED4 = True
 
 async def is_subscribed1(_, client: Client, update: Message):
     if not FSUB_ENABLED1 or not FSUB_CHANNEL1:
