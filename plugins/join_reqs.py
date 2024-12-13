@@ -1,3 +1,5 @@
+from database.database import *
+
 
 @Client.on_chat_join_request(filters.chat(FSUB_CHANNEL1 if FSUB_CHANNEL1 else None))
 @Client.on_chat_join_request(filters.chat(FSUB_CHANNEL2 if FSUB_CHANNEL2 else None))
