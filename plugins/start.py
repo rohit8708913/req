@@ -234,7 +234,7 @@ async def set_fsub2(client: Client, message: Message):
             await message.reply("The bot must be an admin in the channel.")
             return
 
-        FSUB_CHANNEL1 = channel_id
+        FSUB_CHANNEL2 = channel_id
         await message.reply(f"Channel 2 FSUB set to ID: {channel_id}")
     except Exception as e:
         await message.reply(f"Error: {e}")
