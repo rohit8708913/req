@@ -8,7 +8,7 @@ from pyrogram.errors import FloodWait, UserNotParticipant, RPCError
 from bot import Bot
 from config import *
 from helper_func import *
-from database.database import add_user, del_user, full_userbase, present_user
+from database.database import *
 
 #=====================================================================================##
 FSUB_CHANNEL1 = None
