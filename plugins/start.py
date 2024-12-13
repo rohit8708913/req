@@ -381,10 +381,10 @@ async def not_joined(client: Client, message: Message):
     # Use the is_subscribed filter for checking membership
     user_id = message.from_user.id
    
-    sub1 = await is_subscribed1
-    sub2 = await is_subscribed2
-    sub3 = await is_subscribed3
-    sub4 = await is_subscribed4
+    sub1 = await is_subscribed1(client, message)
+    sub2 = await is_subscribed2(client, message)
+    sub3 = await is_subscribed3(client, message)
+    sub4 = await is_subscribed4(client, message)
     invite_link1 = await client.export_chat_invite_link(FSUB_CHANNEL1)
     invite_link2 = await client.export_chat_invite_link(FSUB_CHANNEL2)
     invite_link3 = await client.export_chat_invite_link(FSUB_CHANNEL3)
