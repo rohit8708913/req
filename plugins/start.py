@@ -172,8 +172,8 @@ async def not_joined(client: Client, message: Message):
             except Exception as e:
                 print(f"Error checking Channel 4 subscription: {e}")
 
-        # Add "Try Again" button if any channel is not joined
-        if buttons:
+        # Add "Try Again" button if any channel is not joined and command exists
+        if buttons and len(message.command) > 1:
             buttons.append([
                 InlineKeyboardButton(
                     "Try Again",
@@ -181,6 +181,8 @@ async def not_joined(client: Client, message: Message):
                 )
             ])
 
+        # If there are any buttons, show them
+        if buttons:
             await message.reply(
                 FORCE_MSG.format(
                     first=message.from_user.first_name or "User",
