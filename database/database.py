@@ -51,7 +51,7 @@ class JoinReqsBase:
         if not self.is_active():
             print("Error: Database connection is not active.")
             return None
-        return self.db["users"] if "users" in self.db.collection_names() else None
+        return self.db["users"]  # Correct access of collection directly
 
     async def add_user(self, user_id, first_name, username, date):
         """Add a user to the database."""
@@ -125,9 +125,9 @@ class JoinReqsBase:
 
     async def get_fsub_mode(self, channel_id):
         """Get the FSUB mode for the channel."""
-        col = self.db["fsub_modes"]
+        col = self.db["fsub_modes"]  # Correct access of collection directly
         try:
-            doc = await col.find_one({"channel_id": channel_id})  # Correctly querying the collection
+            doc = await col.find_one({"channel_id": channel_id})
             if doc and "mode" in doc:
                 return doc["mode"] if doc["mode"] in ["direct", "request"] else "direct"
             else:
@@ -138,13 +138,12 @@ class JoinReqsBase:
 
     async def set_fsub_mode(self, channel_id, mode):
         """Set the FSUB mode for the channel."""
-        col = self.db["fsub_modes"]
+        col = self.db["fsub_modes"]  # Correct access of collection directly
         try:
-            # Try to update the existing document or insert it if it doesn't exist
             result = await col.update_one(
                 {"channel_id": channel_id}, 
                 {"$set": {"mode": mode}}, 
-                upsert=True  # This will insert a new document if one doesn't already exist
+                upsert=True  # Insert new document if one doesn't already exist
             )
             if result.matched_count > 0:
                 print(f"FSUB mode for Channel {channel_id} updated to `{mode}`.")
