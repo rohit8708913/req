@@ -124,34 +124,34 @@ class JoinReqsBase:
             return 0
 
     async def get_fsub_mode(self, channel_id):
-    """Get the FSUB mode for the channel."""
-    col = self.db["fsub_modes"]
-    try:
-        doc = await col.find_one({"channel_id": channel_id})  # Correctly querying the collection
-        if doc and "mode" in doc:
-            return doc["mode"] if doc["mode"] in ["direct", "request"] else "direct"
-        else:
-            return "direct"  # Default to 'direct' if no mode is set
-    except Exception as e:
-        print(f"Error getting FSUB mode: {e}")
-        return "direct"  # Default to 'direct' in case of error
+        """Get the FSUB mode for the channel."""
+        col = self.db["fsub_modes"]
+        try:
+            doc = await col.find_one({"channel_id": channel_id})  # Correctly querying the collection
+            if doc and "mode" in doc:
+                return doc["mode"] if doc["mode"] in ["direct", "request"] else "direct"
+            else:
+                return "direct"  # Default to 'direct' if no mode is set
+        except Exception as e:
+            print(f"Error getting FSUB mode: {e}")
+            return "direct"  # Default to 'direct' in case of error
 
     async def set_fsub_mode(self, channel_id, mode):
-    """Set the FSUB mode for the channel."""
-    col = self.db["fsub_modes"]
-    try:
-        # Try to update the existing document or insert it if it doesn't exist
-        result = await col.update_one(
-            {"channel_id": channel_id}, 
-            {"$set": {"mode": mode}}, 
-            upsert=True  # This will insert a new document if one doesn't already exist
-        )
-        if result.matched_count > 0:
-            print(f"FSUB mode for Channel {channel_id} updated to `{mode}`.")
-        else:
-            print(f"FSUB mode for Channel {channel_id} set to `{mode}` (new document).")
-    except Exception as e:
-        print(f"Error setting FSUB mode: {e}")
+        """Set the FSUB mode for the channel."""
+        col = self.db["fsub_modes"]
+        try:
+            # Try to update the existing document or insert it if it doesn't exist
+            result = await col.update_one(
+                {"channel_id": channel_id}, 
+                {"$set": {"mode": mode}}, 
+                upsert=True  # This will insert a new document if one doesn't already exist
+            )
+            if result.matched_count > 0:
+                print(f"FSUB mode for Channel {channel_id} updated to `{mode}`.")
+            else:
+                print(f"FSUB mode for Channel {channel_id} set to `{mode}` (new document).")
+        except Exception as e:
+            print(f"Error setting FSUB mode: {e}")
 
     async def has_join_request(self, user_id, channel_id):
         """Check if the user has requested to join the channel."""
