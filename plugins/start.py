@@ -436,7 +436,7 @@ async def start_command(client: Client, message: Message):
     global FSUB_ENABLED1, FSUB_ENABLED2, FSUB_ENABLED3, FSUB_ENABLED4
 
     user_id = message.from_user.id
-
+    text = message.text
     # Helper function to check subscription/request for each channel
     async def check_subscription(fsub_channel, fsub_enabled, db_instance, is_subscribed_function, channel_name):
         if fsub_enabled and fsub_channel:
