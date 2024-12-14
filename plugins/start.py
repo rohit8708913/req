@@ -26,10 +26,10 @@ FSUB_ENABLED4 = True
 
 
 # Initialize databases for each channel
-db1 = JoinReqs1()
-db2 = JoinReqs2()
-db3 = JoinReqs3()
-db4 = JoinReqs4()
+db1 = JoinReqs1("channel1_db")
+db2 = JoinReqs2("channel2_db")
+db3 = JoinReqs3("channel3_db")
+db4 = JoinReqs4("channel4_db")
 
 # Filter for FSUB_CHANNEL1
 async def is_subscribed1(_, client, update: Message):
@@ -168,8 +168,11 @@ async def set_fsub_mode1(client, message: Message):
         return
 
     # Update the FSUB mode for Channel 1
-    await db1.set_fsub_mode(FSUB_CHANNEL1, mode)
-    await message.reply(f"FSUB mode for Channel 1 set to `{mode}`.")
+    try:
+        await db1.set_fsub_mode(FSUB_CHANNEL1, mode)
+        await message.reply(f"FSUB mode for Channel 1 set to `{mode}`.")
+    except Exception as e:
+        await message.reply(f"Error setting FSUB mode: {e}")
 
 # Command to change FSUB mode for Channel 2
 @Bot.on_message(filters.command("setmode2") & filters.user(ADMINS))
@@ -185,8 +188,11 @@ async def set_fsub_mode2(client, message: Message):
         return
 
     # Update the FSUB mode for Channel 2
-    await db2.set_fsub_mode(FSUB_CHANNEL2, mode)
-    await message.reply(f"FSUB mode for Channel 2 set to `{mode}`.")
+    try:
+        await db2.set_fsub_mode(FSUB_CHANNEL2, mode)
+        await message.reply(f"FSUB mode for Channel 2 set to `{mode}`.")
+    except Exception as e:
+        await message.reply(f"Error setting FSUB mode: {e}")
 
 # Command to change FSUB mode for Channel 3
 @Bot.on_message(filters.command("setmode3") & filters.user(ADMINS))
@@ -202,8 +208,11 @@ async def set_fsub_mode3(client, message: Message):
         return
 
     # Update the FSUB mode for Channel 3
-    await db3.set_fsub_mode(FSUB_CHANNEL3, mode)
-    await message.reply(f"FSUB mode for Channel 3 set to `{mode}`.")
+    try:
+        await db3.set_fsub_mode(FSUB_CHANNEL3, mode)
+        await message.reply(f"FSUB mode for Channel 3 set to `{mode}`.")
+    except Exception as e:
+        await message.reply(f"Error setting FSUB mode: {e}")
 
 # Command to change FSUB mode for Channel 4
 @Bot.on_message(filters.command("setmode4") & filters.user(ADMINS))
@@ -219,8 +228,11 @@ async def set_fsub_mode4(client, message: Message):
         return
 
     # Update the FSUB mode for Channel 4
-    await db4.set_fsub_mode(FSUB_CHANNEL4, mode)
-    await message.reply(f"FSUB mode for Channel 4 set to `{mode}`.")
+    try:
+        await db4.set_fsub_mode(FSUB_CHANNEL4, mode)
+        await message.reply(f"FSUB mode for Channel 4 set to `{mode}`.")
+    except Exception as e:
+        await message.reply(f"Error setting FSUB mode: {e}")
 
 #=====================================================================================##
 
