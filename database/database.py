@@ -51,7 +51,7 @@ class JoinReqsBase:
         if not self.is_active():
             print("Error: Database connection is not active.")
             return None
-        return self.db["users"]
+        return self.db.get("users", None)  # Using .get to prevent KeyError
 
     async def add_user(self, user_id, first_name, username, date):
         """Add a user to the database."""
@@ -125,7 +125,10 @@ class JoinReqsBase:
 
     async def get_fsub_mode(self, channel_id):
         """Get the FSUB mode for the channel."""
-        col = self.db["fsub_modes"]
+        col = self.db.get("fsub_modes", None)
+        if col is None:
+            print(f"Error: 'fsub_modes' collection not found.")
+            return "direct"  # Default to 'direct' if no collection exists
         try:
             doc = await col.find_one({"channel_id": channel_id})
             if doc and "mode" in doc:
@@ -136,6 +139,30 @@ class JoinReqsBase:
         except Exception as e:
             print(f"Error getting FSUB mode: {e}")
             return "direct"  # Default to 'direct' in case of error
+
+    async def set_fsub_mode(self, channel_id, mode):
+        """Set the FSUB mode for the channel."""
+        col = self.db.get("fsub_modes", None)
+        if col is None:
+            print(f"Error: 'fsub_modes' collection not found.")
+            return
+        try:
+            # Ensure mode is either 'direct' or 'request'
+            if mode not in ["direct", "request"]:
+                raise ValueError("Invalid mode. Must be 'direct' or 'request'.")
+            
+            # Update the FSUB mode in the database
+            result = await col.update_one(
+                {"channel_id": channel_id},
+                {"$set": {"mode": mode}},
+                upsert=True  # Create a new document if one doesn't exist
+            )
+            if result.modified_count > 0:
+                print(f"FSUB mode for Channel {channel_id} successfully updated to {mode}.")
+            else:
+                print(f"FSUB mode for Channel {channel_id} is already set to {mode}.")
+        except Exception as e:
+            print(f"Error setting FSUB mode for Channel {channel_id}: {e}")
 
     async def has_join_request(self, user_id, channel_id):
         """Check if the user has requested to join the channel."""
