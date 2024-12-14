@@ -168,11 +168,8 @@ async def set_fsub_mode1(client, message: Message):
         return
 
     # Update the FSUB mode for Channel 1
-    try:
-        await db1.set_fsub_mode(FSUB_CHANNEL1, mode)
-        await message.reply(f"FSUB mode for Channel 1 set to `{mode}`.")
-    except Exception as e:
-        await message.reply(f"Error setting FSUB mode: {e}")
+    await db1.set_fsub_mode(FSUB_CHANNEL1, mode)
+    await message.reply(f"FSUB mode for Channel 1 set to `{mode}`.")
 
 # Command to change FSUB mode for Channel 2
 @Bot.on_message(filters.command("setmode2") & filters.user(ADMINS))
@@ -188,11 +185,8 @@ async def set_fsub_mode2(client, message: Message):
         return
 
     # Update the FSUB mode for Channel 2
-    try:
-        await db2.set_fsub_mode(FSUB_CHANNEL2, mode)
-        await message.reply(f"FSUB mode for Channel 2 set to `{mode}`.")
-    except Exception as e:
-        await message.reply(f"Error setting FSUB mode: {e}")
+    await db2.set_fsub_mode(FSUB_CHANNEL2, mode)
+    await message.reply(f"FSUB mode for Channel 2 set to `{mode}`.")
 
 # Command to change FSUB mode for Channel 3
 @Bot.on_message(filters.command("setmode3") & filters.user(ADMINS))
@@ -208,11 +202,8 @@ async def set_fsub_mode3(client, message: Message):
         return
 
     # Update the FSUB mode for Channel 3
-    try:
-        await db3.set_fsub_mode(FSUB_CHANNEL3, mode)
-        await message.reply(f"FSUB mode for Channel 3 set to `{mode}`.")
-    except Exception as e:
-        await message.reply(f"Error setting FSUB mode: {e}")
+    await db3.set_fsub_mode(FSUB_CHANNEL3, mode)
+    await message.reply(f"FSUB mode for Channel 3 set to `{mode}`.")
 
 # Command to change FSUB mode for Channel 4
 @Bot.on_message(filters.command("setmode4") & filters.user(ADMINS))
@@ -228,11 +219,8 @@ async def set_fsub_mode4(client, message: Message):
         return
 
     # Update the FSUB mode for Channel 4
-    try:
-        await db4.set_fsub_mode(FSUB_CHANNEL4, mode)
-        await message.reply(f"FSUB mode for Channel 4 set to `{mode}`.")
-    except Exception as e:
-        await message.reply(f"Error setting FSUB mode: {e}")
+    await db4.set_fsub_mode(FSUB_CHANNEL4, mode)
+    await message.reply(f"FSUB mode for Channel 4 set to `{mode}`.")
 
 #=====================================================================================##
 
