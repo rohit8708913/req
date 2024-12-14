@@ -51,7 +51,7 @@ class JoinReqsBase:
         if not self.is_active():
             print("Error: Database connection is not active.")
             return None
-        return self.db.get("users", None)  # Using .get to prevent KeyError
+        return self.db["users"] if "users" in self.db.collection_names() else None
 
     async def add_user(self, user_id, first_name, username, date):
         """Add a user to the database."""
