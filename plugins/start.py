@@ -50,8 +50,13 @@ async def is_subscribed1(_, client, update: Message):
             print(f"Error checking subscription for Channel 1: {e}")
             return False
     elif mode == "request":
-        # Allow all users in "request" mode
-        return True
+        try:
+            # Check if the user has requested to join the FSUB channel
+            has_requested = await db1.has_join_request(user_id=update.from_user.id, channel_id=FSUB_CHANNEL1)
+            return has_requested
+        except Exception as e:
+            print(f"Error checking join request for Channel 1: {e}")
+            return False
 
 subscribed1 = filters.create(is_subscribed1)
 
@@ -75,7 +80,13 @@ async def is_subscribed2(_, client, update: Message):
             print(f"Error checking subscription for Channel 2: {e}")
             return False
     elif mode == "request":
-        return True
+        try:
+            # Check if the user has requested to join the FSUB channel
+            has_requested = await db2.has_join_request(user_id=update.from_user.id, channel_id=FSUB_CHANNEL2)
+            return has_requested
+        except Exception as e:
+            print(f"Error checking join request for Channel 2: {e}")
+            return False
 
 subscribed2 = filters.create(is_subscribed2)
 
@@ -99,7 +110,13 @@ async def is_subscribed3(_, client, update: Message):
             print(f"Error checking subscription for Channel 3: {e}")
             return False
     elif mode == "request":
-        return True
+        try:
+            # Check if the user has requested to join the FSUB channel
+            has_requested = await db3.has_join_request(user_id=update.from_user.id, channel_id=FSUB_CHANNEL3)
+            return has_requested
+        except Exception as e:
+            print(f"Error checking join request for Channel 3: {e}")
+            return False
 
 subscribed3 = filters.create(is_subscribed3)
 
@@ -123,7 +140,13 @@ async def is_subscribed4(_, client, update: Message):
             print(f"Error checking subscription for Channel 4: {e}")
             return False
     elif mode == "request":
-        return True
+        try:
+            # Check if the user has requested to join the FSUB channel
+            has_requested = await db4.has_join_request(user_id=update.from_user.id, channel_id=FSUB_CHANNEL4)
+            return has_requested
+        except Exception as e:
+            print(f"Error checking join request for Channel 4: {e}")
+            return False
 
 subscribed4 = filters.create(is_subscribed4)
 
