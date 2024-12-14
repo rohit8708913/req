@@ -245,10 +245,12 @@ async def setup_channel_invite_link(client, channel_id, channel_enabled, db_inst
             client.LOGGER(__name__).warning(f"Check {channel_name} ({channel_id}) and ensure the bot is admin with invite permissions.")
             sys.exit()
 
+#=====================================================================================##
+
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     global FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
-    global FSUB_ENABLED1, FSUB_ENABLED2, FSUB_ENABLED3, FSUB_ENABLED4
+    global FSUB_ENABLED1, FSSUB_ENABLED2, FSUB_ENABLED3, FSUB_ENABLED4
 
     user_id = message.from_user.id
     buttons = []
@@ -263,11 +265,11 @@ async def not_joined(client: Client, message: Message):
                     try:
                         member = await client.get_chat_member(fsub_channel, user_id)
                         if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-                            invite_link = await setup_channel_invite_link(fsub_channel, fsub_enabled, db_instance, channel_name)
+                            invite_link = await setup_channel_invite_link(client, fsub_channel, fsub_enabled, db_instance, channel_name)
                             buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=invite_link)])
                     except Exception as e:
                         print(f"Error checking subscription for channel {fsub_channel}: {e}")
-                        invite_link = await setup_channel_invite_link(fsub_channel, fsub_enabled, db_instance, channel_name)
+                        invite_link = await setup_channel_invite_link(client, fsub_channel, fsub_enabled, db_instance, channel_name)
                         buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=invite_link)])
 
                 elif mode == "request":  # Request mode: Log join request
@@ -279,9 +281,6 @@ async def not_joined(client: Client, message: Message):
                             username=message.from_user.username,
                             date=message.date
                         )
-                        # Add join request invite link button
-                        invite_link = await setup_channel_invite_link(fsub_channel, fsub_enabled, db_instance, channel_name)
-                        buttons.append([InlineKeyboardButton(f"Request to Join {channel_name}", url=invite_link)])
 
         # Check all channels
         await check_channel(FSUB_CHANNEL1, FSUB_ENABLED1, db1, "Channel 1")
