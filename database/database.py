@@ -31,16 +31,12 @@ async def del_user(user_id: int):
     return
 
 
-class JoinReqsBase:
-    """Base class for all channel join request databases."""
-    def __init__(self, db_name: str):
-        """Initialize the database connection for a specific channel."""
-        if JOIN_REQS_DB:
-            self.client = motor.motor_asyncio.AsyncIOMotorClient(JOIN_REQS_DB)
-            self.db = self.client[db_name]  # Database specific to this channel
-        else:
-            self.client = None
-            self.db = None
+
+# Channel 1 Database Class
+class JoinReqs1:
+    def __init__(self):
+        self.client = motor.motor_asyncio.AsyncIOMotorClient(JOIN_REQS_DB)
+        self.db = self.client["JoinReqs_Channel1"]  # Database specific to Channel 1
 
     def is_active(self):
         """Check if the database connection is active."""
@@ -67,7 +63,7 @@ class JoinReqsBase:
                 "date": date,
             })
         except Exception as e:
-            print(f"Error adding user to the channel: {e}")
+            print(f"Error adding user to Channel 1: {e}")
 
     async def get_user(self, user_id):
         """Retrieve a user from the database."""
@@ -77,7 +73,7 @@ class JoinReqsBase:
         try:
             return await col.find_one({"user_id": int(user_id)})
         except Exception as e:
-            print(f"Error retrieving user from the channel: {e}")
+            print(f"Error retrieving user from Channel 1: {e}")
             return None
 
     async def get_all_users(self):
@@ -88,7 +84,7 @@ class JoinReqsBase:
         try:
             return await col.find().to_list(None)
         except Exception as e:
-            print(f"Error retrieving all users from the channel: {e}")
+            print(f"Error retrieving all users from Channel 1: {e}")
             return []
 
     async def delete_user(self, user_id):
@@ -99,7 +95,7 @@ class JoinReqsBase:
         try:
             await col.delete_one({"user_id": int(user_id)})
         except Exception as e:
-            print(f"Error deleting user from the channel: {e}")
+            print(f"Error deleting user from Channel 1: {e}")
 
     async def delete_all_users(self):
         """Delete all users from the database."""
@@ -109,7 +105,7 @@ class JoinReqsBase:
         try:
             await col.delete_many({})
         except Exception as e:
-            print(f"Error deleting all users from the channel: {e}")
+            print(f"Error deleting all users from Channel 1: {e}")
 
     async def get_all_users_count(self):
         """Get the count of all users in the database."""
@@ -119,64 +115,338 @@ class JoinReqsBase:
         try:
             return await col.count_documents({})
         except Exception as e:
-            print(f"Error counting users in the channel: {e}")
+            print(f"Error counting users in Channel 1: {e}")
             return 0
 
-    async def set_fsub_mode(self, channel_id, mode):
+    async def set_fsub_mode(self, mode):
         """Set the FSUB mode for the channel."""
         col = self.db["fsub_modes"]
         try:
-            await col.update_one({"channel_id": channel_id}, {"$set": {"mode": mode}}, upsert=True)
+            await col.update_one({"channel_id": 1}, {"$set": {"mode": mode}}, upsert=True)
         except Exception as e:
-            print(f"Error setting FSUB mode: {e}")
+            print(f"Error setting FSUB mode for Channel 1: {e}")
 
-    async def get_fsub_mode(self, channel_id):
+    async def get_fsub_mode(self):
         """Get the FSUB mode for the channel."""
         col = self.db["fsub_modes"]
         try:
-            doc = await col.find_one({"channel_id": channel_id})
+            doc = await col.find_one({"channel_id": 1})
             return doc["mode"] if doc else None
         except Exception as e:
-            print(f"Error getting FSUB mode: {e}")
+            print(f"Error getting FSUB mode for Channel 1: {e}")
             return None
 
-    async def has_join_request(self, user_id, channel_id):
-        """Check if the user has requested to join the channel."""
+
+# Channel 2 Database Class
+class JoinReqs2:
+    def __init__(self):
+        self.client = motor.motor_asyncio.AsyncIOMotorClient(JOIN_REQS_DB)
+        self.db = self.client["JoinReqs_Channel2"]  # Database specific to Channel 2
+
+    def is_active(self):
+        """Check if the database connection is active."""
+        return self.client is not None
+
+    def get_collection(self):
+        """Get the collection for this specific channel."""
+        if not self.is_active():
+            return None
+        return self.db["users"]
+
+    async def add_user(self, user_id, first_name, username, date):
+        """Add a user to the database."""
         col = self.get_collection()
         if not col:
-            return False
+            print(f"Error: {user_id} not added. Collection not found.")
+            return
         try:
-            request = await col.find_one({"user_id": int(user_id), "channel_id": int(channel_id)})
-            return request is not None
+            await col.insert_one({
+                "_id": int(user_id),
+                "user_id": int(user_id),
+                "first_name": first_name,
+                "username": username,
+                "date": date,
+            })
         except Exception as e:
-            print(f"Error checking join request for the channel: {e}")
-            return False
+            print(f"Error adding user to Channel 2: {e}")
+
+    async def get_user(self, user_id):
+        """Retrieve a user from the database."""
+        col = self.get_collection()
+        if not col:
+            return None
+        try:
+            return await col.find_one({"user_id": int(user_id)})
+        except Exception as e:
+            print(f"Error retrieving user from Channel 2: {e}")
+            return None
+
+    async def get_all_users(self):
+        """Retrieve all users from the database."""
+        col = self.get_collection()
+        if not col:
+            return []
+        try:
+            return await col.find().to_list(None)
+        except Exception as e:
+            print(f"Error retrieving all users from Channel 2: {e}")
+            return []
+
+    async def delete_user(self, user_id):
+        """Delete a user from the database."""
+        col = self.get_collection()
+        if not col:
+            return
+        try:
+            await col.delete_one({"user_id": int(user_id)})
+        except Exception as e:
+            print(f"Error deleting user from Channel 2: {e}")
+
+    async def delete_all_users(self):
+        """Delete all users from the database."""
+        col = self.get_collection()
+        if not col:
+            return
+        try:
+            await col.delete_many({})
+        except Exception as e:
+            print(f"Error deleting all users from Channel 2: {e}")
+
+    async def get_all_users_count(self):
+        """Get the count of all users in the database."""
+        col = self.get_collection()
+        if not col:
+            return 0
+        try:
+            return await col.count_documents({})
+        except Exception as e:
+            print(f"Error counting users in Channel 2: {e}")
+            return 0
+
+    async def set_fsub_mode(self, mode):
+        """Set the FSUB mode for the channel."""
+        col = self.db["fsub_modes"]
+        try:
+            await col.update_one({"channel_id": 2}, {"$set": {"mode": mode}}, upsert=True)
+        except Exception as e:
+            print(f"Error setting FSUB mode for Channel 2: {e}")
+
+    async def get_fsub_mode(self):
+        """Get the FSUB mode for the channel."""
+        col = self.db["fsub_modes"]
+        try:
+            doc = await col.find_one({"channel_id": 2})
+            return doc["mode"] if doc else None
+        except Exception as e:
+            print(f"Error getting FSUB mode for Channel 2: {e}")
+            return None
 
 
-# Now we create separate classes for each channel, inheriting from JoinReqsBase
-
-class JoinReqs1(JoinReqsBase):
+# Channel 3 Database Class
+class JoinReqs3:
     def __init__(self):
-        super().__init__("JoinReqs_Channel1")  # Use the specific database for Channel 1
+        self.client = motor.motor_asyncio.AsyncIOMotorClient(JOIN_REQS_DB)
+        self.db = self.client["JoinReqs_Channel3"]  # Database specific to Channel 3
+
+    def is_active(self):
+        """Check if the database connection is active."""
+        return self.client is not None
+
+    def get_collection(self):
+        """Get the collection for this specific channel."""
+        if not self.is_active():
+            return None
+        return self.db["users"]
+
+    async def add_user(self, user_id, first_name, username, date):
+        """Add a user to the database."""
+        col = self.get_collection()
+        if not col:
+            print(f"Error: {user_id} not added. Collection not found.")
+            return
+        try:
+            await col.insert_one({
+                "_id": int(user_id),
+                "user_id": int(user_id),
+                "first_name": first_name,
+                "username": username,
+                "date": date,
+            })
+        except Exception as e:
+            print(f"Error adding user to Channel 3: {e}")
+
+    async def get_user(self, user_id):
+        """Retrieve a user from the database."""
+        col = self.get_collection()
+        if not col:
+            return None
+        try:
+            return await col.find_one({"user_id": int(user_id)})
+        except Exception as e:
+            print(f"Error retrieving user from Channel 3: {e}")
+            return None
+
+    async def get_all_users(self):
+        """Retrieve all users from the database."""
+        col = self.get_collection()
+        if not col:
+            return []
+        try:
+            return await col.find().to_list(None)
+        except Exception as e:
+            print(f"Error retrieving all users from Channel 3: {e}")
+            return []
+
+    async def delete_user(self, user_id):
+        """Delete a user from the database."""
+        col = self.get_collection()
+        if not col:
+            return
+        try:
+            await col.delete_one({"user_id": int(user_id)})
+        except Exception as e:
+            print(f"Error deleting user from Channel 3: {e}")
+
+    async def delete_all_users(self):
+        """Delete all users from the database."""
+        col = self.get_collection()
+        if not col:
+            return
+        try:
+            await col.delete_many({})
+        except Exception as e:
+            print(f"Error deleting all users from Channel 3: {e}")
+
+    async def get_all_users_count(self):
+        """Get the count of all users in the database."""
+        col = self.get_collection()
+        if not col:
+            return 0
+        try:
+            return await col.count_documents({})
+        except Exception as e:
+            print(f"Error counting users in Channel 3: {e}")
+            return 0
+
+    async def set_fsub_mode(self, mode):
+        """Set the FSUB mode for the channel."""
+        col = self.db["fsub_modes"]
+        try:
+            await col.update_one({"channel_id": 3}, {"$set": {"mode": mode}}, upsert=True)
+        except Exception as e:
+            print(f"Error setting FSUB mode for Channel 3: {e}")
+
+    async def get_fsub_mode(self):
+        """Get the FSUB mode for the channel."""
+        col = self.db["fsub_modes"]
+        try:
+            doc = await col.find_one({"channel_id": 3})
+            return doc["mode"] if doc else None
+        except Exception as e:
+            print(f"Error getting FSUB mode for Channel 3: {e}")
+            return None
 
 
-class JoinReqs2(JoinReqsBase):
+# Channel 4 Database Class
+class JoinReqs4:
     def __init__(self):
-        super().__init__("JoinReqs_Channel2")  # Use the specific database for Channel 2
+        self.client = motor.motor_asyncio.AsyncIOMotorClient(JOIN_REQS_DB)
+        self.db = self.client["JoinReqs_Channel4"]  # Database specific to Channel 4
 
+    def is_active(self):
+        """Check if the database connection is active."""
+        return self.client is not None
 
-class JoinReqs3(JoinReqsBase):
-    def __init__(self):
-        super().__init__("JoinReqs_Channel3")  # Use the specific database for Channel 3
+    def get_collection(self):
+        """Get the collection for this specific channel."""
+        if not self.is_active():
+            return None
+        return self.db["users"]
 
+    async def add_user(self, user_id, first_name, username, date):
+        """Add a user to the database."""
+        col = self.get_collection()
+        if not col:
+            print(f"Error: {user_id} not added. Collection not found.")
+            return
+        try:
+            await col.insert_one({
+                "_id": int(user_id),
+                "user_id": int(user_id),
+                "first_name": first_name,
+                "username": username,
+                "date": date,
+            })
+        except Exception as e:
+            print(f"Error adding user to Channel 4: {e}")
 
-class JoinReqs4(JoinReqsBase):
-    def __init__(self):
-        super().__init__("JoinReqs_Channel4")  # Use the specific database for Channel 4
+    async def get_user(self, user_id):
+        """Retrieve a user from the database."""
+        col = self.get_collection()
+        if not col:
+            return None
+        try:
+            return await col.find_one({"user_id": int(user_id)})
+        except Exception as e:
+            print(f"Error retrieving user from Channel 4: {e}")
+            return None
 
+    async def get_all_users(self):
+        """Retrieve all users from the database."""
+        col = self.get_collection()
+        if not col:
+            return []
+        try:
+            return await col.find().to_list(None)
+        except Exception as e:
+            print(f"Error retrieving all users from Channel 4: {e}")
+            return []
 
-# Initialize your DB instances for each channel
-db1 = JoinReqs1()
-db2 = JoinReqs2()
-db3 = JoinReqs3()
-db4 = JoinReqs4()
+    async def delete_user(self, user_id):
+        """Delete a user from the database."""
+        col = self.get_collection()
+        if not col:
+            return
+        try:
+            await col.delete_one({"user_id": int(user_id)})
+        except Exception as e:
+            print(f"Error deleting user from Channel 4: {e}")
+
+    async def delete_all_users(self):
+        """Delete all users from the database."""
+        col = self.get_collection()
+        if not col:
+            return
+        try:
+            await col.delete_many({})
+        except Exception as e:
+            print(f"Error deleting all users from Channel 4: {e}")
+
+    async def get_all_users_count(self):
+        """Get the count of all users in the database."""
+        col = self.get_collection()
+        if not col:
+            return 0
+        try:
+            return await col.count_documents({})
+        except Exception as e:
+            print(f"Error counting users in Channel 4: {e}")
+            return 0
+
+    async def set_fsub_mode(self, mode):
+        """Set the FSUB mode for the channel."""
+        col = self.db["fsub_modes"]
+        try:
+            await col.update_one({"channel_id": 4}, {"$set": {"mode": mode}}, upsert=True)
+        except Exception as e:
+            print(f"Error setting FSUB mode for Channel 4: {e}")
+
+    async def get_fsub_mode(self):
+        """Get the FSUB mode for the channel."""
+        col = self.db["fsub_modes"]
+        try:
+            doc = await col.find_one({"channel_id": 4})
+            return doc["mode"] if doc else None
+        except Exception as e:
+            print(f"Error getting FSUB mode for Channel 4: {e}")
+            return None
