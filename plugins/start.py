@@ -417,10 +417,9 @@ async def start_command(client: Client, message: Message):
     global FSUB_ENABLED1, FSUB_ENABLED2, FSUB_ENABLED3, FSUB_ENABLED4
 
     user_id = message.from_user.id
-    text = message.text
 
     # Helper function to check subscription/request for each channel
-    async def check_subscription(fsub_channel, fsub_enabled, db_instance, is_subscribed_function):
+    async def check_subscription(fsub_channel, fsub_enabled, db_instance, is_subscribed_function, channel_name):
         if fsub_enabled and fsub_channel:
             mode = await db_instance.get_fsub_mode(fsub_channel)
 
@@ -429,34 +428,30 @@ async def start_command(client: Client, message: Message):
                 return await is_subscribed_function(None, client, message)
             elif mode == "request":
                 # Request mode: Log the join request
-                await db_instance.add_user(
-                    user_id=user_id,
-                    first_name=message.from_user.first_name,
-                    username=message.from_user.username,
-                    date=message.date
-                )
+                has_requested = await db_instance.has_join_request(user_id, fsub_channel)
+                if not has_requested:
+                    await db_instance.add_user(
+                        user_id=user_id,
+                        first_name=message.from_user.first_name,
+                        username=message.from_user.username,
+                        date=message.date
+                    )
                 return True  # Allow user in request mode
         return True  # If FSUB is disabled or channel is not set
 
     # Check each channel's subscription/request status
     if (
-        not await check_subscription(FSUB_CHANNEL1, FSUB_ENABLED1, db1, is_subscribed1) or
-        not await check_subscription(FSUB_CHANNEL2, FSUB_ENABLED2, db2, is_subscribed2) or
-        not await check_subscription(FSUB_CHANNEL3, FSUB_ENABLED3, db3, is_subscribed3) or
-        not await check_subscription(FSUB_CHANNEL4, FSUB_ENABLED4, db4, is_subscribed4)
+        not await check_subscription(FSUB_CHANNEL1, FSUB_ENABLED1, db1, is_subscribed1, "Channel 1") or
+        not await check_subscription(FSUB_CHANNEL2, FSUB_ENABLED2, db2, is_subscribed2, "Channel 2") or
+        not await check_subscription(FSUB_CHANNEL3, FSUB_ENABLED3, db3, is_subscribed3, "Channel 3") or
+        not await check_subscription(FSUB_CHANNEL4, FSUB_ENABLED4, db4, is_subscribed4, "Channel 4")
     ):
         # Redirect to not_joined if any channel requires subscription
         await not_joined(client, message)
         return
 
-    # If FSUB is disabled or not set for all channels, skip subscription check
-    if not any([
-        FSUB_ENABLED1 and FSUB_CHANNEL1,
-        FSUB_ENABLED2 and FSUB_CHANNEL2,
-        FSUB_ENABLED3 and FSUB_CHANNEL3,
-        FSUB_ENABLED4 and FSUB_CHANNEL4
-    ]):
-        pass
+    # If FSUB is disabled or not set for all channels, process the start command
+    pass  # Placeholder for additional start command logic
 
     
     # If the command includes a base64 encoded string, process it
