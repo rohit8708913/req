@@ -140,6 +140,19 @@ class JoinReqsBase:
             print(f"Error getting FSUB mode: {e}")
             return None
 
+    async def has_join_request(self, user_id, channel_id):
+        """Check if the user has requested to join the channel."""
+        col = self.get_collection()
+        if not col:
+            return False
+        try:
+            request = await col.find_one({"user_id": int(user_id), "channel_id": int(channel_id)})
+            return request is not None
+        except Exception as e:
+            print(f"Error checking join request for the channel: {e}")
+            return False
+
+
 # Now we create separate classes for each channel, inheriting from JoinReqsBase
 
 class JoinReqs1(JoinReqsBase):
@@ -160,3 +173,10 @@ class JoinReqs3(JoinReqsBase):
 class JoinReqs4(JoinReqsBase):
     def __init__(self):
         super().__init__("JoinReqs_Channel4")  # Use the specific database for Channel 4
+
+
+# Initialize your DB instances for each channel
+db1 = JoinReqs1()
+db2 = JoinReqs2()
+db3 = JoinReqs3()
+db4 = JoinReqs4()
