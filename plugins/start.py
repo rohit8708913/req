@@ -200,7 +200,7 @@ async def set_fsub_mode4(client, message: Message):
 
 #=====================================================================================##
 
-from bot import export_chat_invite_link  # Import the invite link function
+from bot import setup_channel_invite_link  # Import the invite link function
 
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
