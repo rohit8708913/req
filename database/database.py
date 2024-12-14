@@ -141,3 +141,24 @@ class JoinReqsBase:
         except Exception as e:
             print(f"Error getting FSUB mode: {e}")
             return None
+
+# Now we create separate classes for each channel, inheriting from JoinReqsBase
+
+class JoinReqs1(JoinReqsBase):
+    def __init__(self):
+        super().__init__("JoinReqs_Channel1")  # Use the specific database for Channel 1
+
+
+class JoinReqs2(JoinReqsBase):
+    def __init__(self):
+        super().__init__("JoinReqs_Channel2")  # Use the specific database for Channel 2
+
+
+class JoinReqs3(JoinReqsBase):
+    def __init__(self):
+        super().__init__("JoinReqs_Channel3")  # Use the specific database for Channel 3
+
+
+class JoinReqs4(JoinReqsBase):
+    def __init__(self):
+        super().__init__("JoinReqs_Channel4")  # Use the specific database for Channel 4
