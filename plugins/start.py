@@ -276,12 +276,16 @@ async def not_joined(client: Client, message: Message):
                 elif mode == "request":  # Request mode: Log join request
                     has_requested = await db_instance.has_join_request(user_id, fsub_channel)
                     if not has_requested:
-                        await db_instance.add_user(
-                            user_id=user_id,
-                            first_name=message.from_user.first_name,
-                            username=message.from_user.username,
-                            date=message.date
-                        )
+                        # If the user has not requested yet, show the "Join Channel" button with the custom invite link
+                        try:
+                            # Create a special invite link for join request
+                            link = (await client.create_chat_invite_link(fsub_channel, creates_join_request=True)).invite_link
+                            buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=link)])
+                        except Exception as e:
+                            print(f"Error creating join request invite link for {channel_name}: {e}")
+                    else:
+                        # If the user has already requested, proceed with start command without showing a button
+                        pass
 
         # Check each channel based on the mode (direct or request)
         await check_channel(FSUB_CHANNEL1, FSUB_ENABLED1, db1, "Channel 1")
@@ -312,7 +316,7 @@ async def not_joined(client: Client, message: Message):
             )
             return
 
-        # If all channels are joined, process the start command
+        # If all channels are joined, proceed with the start command
         await start_command(client, message)
 
     except Exception as e:
