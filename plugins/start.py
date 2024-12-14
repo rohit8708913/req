@@ -220,10 +220,10 @@ async def not_joined(client: Client, message: Message):
                     try:
                         member = await client.get_chat_member(fsub_channel, user_id)
                         if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-                            invite_link = await export_chat_invite_link(fsub_channel)
+                            invite_link = await setup_channel_invite_link(fsub_channel, fsub_enabled, db_instance, channel_name)
                             buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=invite_link)])
                     except UserNotParticipant:
-                        invite_link = await export_chat_invite_link(fsub_channel)
+                        invite_link = await setup_channel_invite_link(fsub_channel, fsub_enabled, db_instance, channel_name)
                         buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=invite_link)])
                     except Exception as e:
                         print(f"Error checking subscription for channel {fsub_channel}: {e}")
