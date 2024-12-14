@@ -124,24 +124,20 @@ class JoinReqsBase:
             print(f"Error counting users in the channel: {e}")
             return 0
 
+    async def set_fsub_mode(self, channel_id, mode):
+        """Set the FSUB mode for the channel."""
+        col = self.db["fsub_modes"]
+        try:
+            await col.update_one({"channel_id": channel_id}, {"$set": {"mode": mode}}, upsert=True)
+        except Exception as e:
+            print(f"Error setting FSUB mode: {e}")
 
-# Now we create separate classes for each channel, inheriting from JoinReqsBase
-
-class JoinReqs1(JoinReqsBase):
-    def __init__(self):
-        super().__init__("JoinReqs_Channel1")  # Use the specific database for Channel 1
-
-
-class JoinReqs2(JoinReqsBase):
-    def __init__(self):
-        super().__init__("JoinReqs_Channel2")  # Use the specific database for Channel 2
-
-
-class JoinReqs3(JoinReqsBase):
-    def __init__(self):
-        super().__init__("JoinReqs_Channel3")  # Use the specific database for Channel 3
-
-
-class JoinReqs4(JoinReqsBase):
-    def __init__(self):
-        super().__init__("JoinReqs_Channel4")  # Use the specific database for Channel 4
+    async def get_fsub_mode(self, channel_id):
+        """Get the FSUB mode for the channel."""
+        col = self.db["fsub_modes"]
+        try:
+            doc = await col.find_one({"channel_id": channel_id})
+            return doc["mode"] if doc else None
+        except Exception as e:
+            print(f"Error getting FSUB mode: {e}")
+            return None
