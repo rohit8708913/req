@@ -32,7 +32,6 @@ FSUB_ENABLED3 = True
 FSUB_CHANNEL4 = None
 FSUB_ENABLED4 = True
 
-
 class Bot(Client):
     def __init__(self):
         super().__init__(
@@ -49,6 +48,7 @@ class Bot(Client):
         await super().start()
         usr_bot_me = await self.get_me()
         self.uptime = datetime.now()
+        self.username = usr_bot_me.username  # Ensure this line is before using usr_bot_me
 
         try:
             await self.setup_fsub_invite_links()
@@ -56,6 +56,15 @@ class Bot(Client):
         except Exception as e:
             self.LOGGER(__name__).warning(f"Error during FSUB setup: {e}")
             sys.exit()
+
+        self.set_parse_mode(ParseMode.HTML)
+        self.LOGGER(__name__).info(f"Bot Running..!\n\nCreated by \nhttps://t.me/rohit_1888")
+        print("Welcome to Bot Modified by Rohit")
+
+        app = web.AppRunner(await web_server())
+        await app.setup()
+        bind_address = "0.0.0.0"
+        await web.TCPSite(app, bind_address, PORT).start()
 
     async def stop(self, *args):
         await super().stop()
@@ -105,13 +114,3 @@ class Bot(Client):
             self.LOGGER(__name__).warning(e)
             self.LOGGER(__name__).warning(f"Ensure bot is admin in DB channel with CHANNEL_ID ({CHANNEL_ID}).")
             sys.exit()
-
-        self.set_parse_mode(ParseMode.HTML)
-        self.LOGGER(__name__).info(f"Bot Running..!\n\nCreated by \nhttps://t.me/rohit_1888")
-        print("Welcome to Bot Modified by Rohit")
-        self.username = usr_bot_me.username
-
-        app = web.AppRunner(await web_server())
-        await app.setup()
-        bind_address = "0.0.0.0"
-        await web.TCPSite(app, bind_address, PORT).start()
