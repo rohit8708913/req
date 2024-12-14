@@ -123,28 +123,18 @@ class JoinReqsBase:
             return 0
 
     async def get_fsub_mode(self, channel_id):
-    """Get the FSUB mode for the channel."""
-    col = self.db["fsub_modes"]
-    try:
-        doc = await col.find_one({"channel_id": channel_id})
-        # Check if mode exists and is either 'direct' or 'request', else default to 'direct'
-        if doc and "mode" in doc:
-            return doc["mode"] if doc["mode"] in ["direct", "request"] else "direct"
-        else:
-            return "direct"  # Default to 'direct' if no mode is set
-    except Exception as e:
-        print(f"Error getting FSUB mode: {e}")
-        return "direct"  # Default to 'direct' in case of error
-
-    async def get_fsub_mode(self, channel_id):
         """Get the FSUB mode for the channel."""
         col = self.db["fsub_modes"]
         try:
             doc = await col.find_one({"channel_id": channel_id})
-            return doc["mode"] if doc else None
+            # Check if mode exists and is either 'direct' or 'request', else default to 'direct'
+            if doc and "mode" in doc:
+                return doc["mode"] if doc["mode"] in ["direct", "request"] else "direct"
+            else:
+                return "direct"  # Default to 'direct' if no mode is set
         except Exception as e:
             print(f"Error getting FSUB mode: {e}")
-            return None
+            return "direct"  # Default to 'direct' in case of error
 
     async def has_join_request(self, user_id, channel_id):
         """Check if the user has requested to join the channel."""
