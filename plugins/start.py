@@ -250,13 +250,13 @@ async def setup_channel_invite_link(client, channel_id, channel_enabled, db_inst
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     global FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
-    global FSUB_ENABLED1, FSSUB_ENABLED2, FSUB_ENABLED3, FSUB_ENABLED4
+    global FSUB_ENABLED1, FSUB_ENABLED2, FSUB_ENABLED3, FSUB_ENABLED4
 
     user_id = message.from_user.id
     buttons = []
 
     try:
-        # Helper function to handle each channel
+        # Helper function to handle each channel's subscription check
         async def check_channel(fsub_channel, fsub_enabled, db_instance, channel_name):
             if fsub_enabled and fsub_channel:
                 mode = await db_instance.get_fsub_mode(fsub_channel)
@@ -265,12 +265,13 @@ async def not_joined(client: Client, message: Message):
                     try:
                         member = await client.get_chat_member(fsub_channel, user_id)
                         if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-                            invite_link = await setup_channel_invite_link(client, fsub_channel, fsub_enabled, db_instance, channel_name)
+                            invite_link = await client.export_chat_invite_link(fsub_channel)
                             buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=invite_link)])
-                    except Exception as e:
-                        print(f"Error checking subscription for channel {fsub_channel}: {e}")
-                        invite_link = await setup_channel_invite_link(client, fsub_channel, fsub_enabled, db_instance, channel_name)
+                    except UserNotParticipant:
+                        invite_link = await client.export_chat_invite_link(fsub_channel)
                         buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=invite_link)])
+                    except Exception as e:
+                        print(f"Error checking {channel_name} subscription: {e}")
 
                 elif mode == "request":  # Request mode: Log join request
                     has_requested = await db_instance.has_join_request(user_id, fsub_channel)
@@ -282,7 +283,7 @@ async def not_joined(client: Client, message: Message):
                             date=message.date
                         )
 
-        # Check all channels
+        # Check each channel based on the mode (direct or request)
         await check_channel(FSUB_CHANNEL1, FSUB_ENABLED1, db1, "Channel 1")
         await check_channel(FSUB_CHANNEL2, FSUB_ENABLED2, db2, "Channel 2")
         await check_channel(FSUB_CHANNEL3, FSUB_ENABLED3, db3, "Channel 3")
@@ -311,7 +312,7 @@ async def not_joined(client: Client, message: Message):
             )
             return
 
-        # If all channels are joined or in request mode, process the start command
+        # If all channels are joined, process the start command
         await start_command(client, message)
 
     except Exception as e:
@@ -677,19 +678,23 @@ async def fsub_status1(client: Client, message: Message):
 
     status = "enabled" if FSUB_ENABLED1 else "disabled"
     channel_info = f"Channel ID: {FSUB_CHANNEL1 or 'Not Set'}"
+    mode = "Not Set"  # Default mode if no mode is set
 
     if FSUB_ENABLED1 and FSUB_CHANNEL1:
         try:
+            mode = await db1.get_fsub_mode(FSUB_CHANNEL1)
             invite_link = await client.export_chat_invite_link(FSUB_CHANNEL1)
             channel_info += f"\nInvite Link: {invite_link}"
         except Exception as e:
             channel_info += f"\nInvite Link: Error generating link ({e})"
-    
+
     await message.reply(
         f"**Force Subscription Status for Channel 1:**\n\n"
         f"**Status:** {status.capitalize()}\n"
+        f"**Mode:** {mode}\n"
         f"{channel_info}"
     )
+
 
 @Bot.on_message(filters.command('fsubstatus2') & filters.user(ADMINS))
 async def fsub_status2(client: Client, message: Message):
@@ -697,19 +702,23 @@ async def fsub_status2(client: Client, message: Message):
 
     status = "enabled" if FSUB_ENABLED2 else "disabled"
     channel_info = f"Channel ID: {FSUB_CHANNEL2 or 'Not Set'}"
+    mode = "Not Set"  # Default mode if no mode is set
 
     if FSUB_ENABLED2 and FSUB_CHANNEL2:
         try:
+            mode = await db2.get_fsub_mode(FSUB_CHANNEL2)
             invite_link = await client.export_chat_invite_link(FSUB_CHANNEL2)
             channel_info += f"\nInvite Link: {invite_link}"
         except Exception as e:
             channel_info += f"\nInvite Link: Error generating link ({e})"
-    
+
     await message.reply(
         f"**Force Subscription Status for Channel 2:**\n\n"
         f"**Status:** {status.capitalize()}\n"
+        f"**Mode:** {mode}\n"
         f"{channel_info}"
     )
+
 
 @Bot.on_message(filters.command('fsubstatus3') & filters.user(ADMINS))
 async def fsub_status3(client: Client, message: Message):
@@ -717,19 +726,23 @@ async def fsub_status3(client: Client, message: Message):
 
     status = "enabled" if FSUB_ENABLED3 else "disabled"
     channel_info = f"Channel ID: {FSUB_CHANNEL3 or 'Not Set'}"
+    mode = "Not Set"  # Default mode if no mode is set
 
     if FSUB_ENABLED3 and FSUB_CHANNEL3:
         try:
+            mode = await db3.get_fsub_mode(FSUB_CHANNEL3)
             invite_link = await client.export_chat_invite_link(FSUB_CHANNEL3)
             channel_info += f"\nInvite Link: {invite_link}"
         except Exception as e:
             channel_info += f"\nInvite Link: Error generating link ({e})"
-    
+
     await message.reply(
         f"**Force Subscription Status for Channel 3:**\n\n"
         f"**Status:** {status.capitalize()}\n"
+        f"**Mode:** {mode}\n"
         f"{channel_info}"
     )
+
 
 @Bot.on_message(filters.command('fsubstatus4') & filters.user(ADMINS))
 async def fsub_status4(client: Client, message: Message):
@@ -737,19 +750,24 @@ async def fsub_status4(client: Client, message: Message):
 
     status = "enabled" if FSUB_ENABLED4 else "disabled"
     channel_info = f"Channel ID: {FSUB_CHANNEL4 or 'Not Set'}"
+    mode = "Not Set"  # Default mode if no mode is set
 
     if FSUB_ENABLED4 and FSUB_CHANNEL4:
         try:
+            mode = await db4.get_fsub_mode(FSUB_CHANNEL4)
             invite_link = await client.export_chat_invite_link(FSUB_CHANNEL4)
             channel_info += f"\nInvite Link: {invite_link}"
         except Exception as e:
             channel_info += f"\nInvite Link: Error generating link ({e})"
-    
+
     await message.reply(
         f"**Force Subscription Status for Channel 4:**\n\n"
         f"**Status:** {status.capitalize()}\n"
+        f"**Mode:** {mode}\n"
         f"{channel_info}"
     )
+
+
 
 #=====================================================================================##
 
