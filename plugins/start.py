@@ -26,10 +26,10 @@ FSUB_ENABLED4 = True
 
 
 # Initialize databases for each channel
-db1 = JoinReqs1("channel1_db")
-db2 = JoinReqs2("channel2_db")
-db3 = JoinReqs3("channel3_db")
-db4 = JoinReqs4("channel4_db")
+db1 = JoinReqs1()
+db2 = JoinReqs2()
+db3 = JoinReqs3()
+db4 = JoinReqs4()
 
 # Filter for FSUB_CHANNEL1
 async def is_subscribed1(_, client, update: Message):
