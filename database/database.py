@@ -49,13 +49,14 @@ class JoinReqsBase:
     def get_collection(self):
         """Get the collection for this specific channel."""
         if not self.is_active():
+            print("Error: Database connection is not active.")
             return None
         return self.db["users"]
 
     async def add_user(self, user_id, first_name, username, date):
         """Add a user to the database."""
         col = self.get_collection()
-        if not col:
+        if col is None:
             print(f"Error: {user_id} not added. Collection not found.")
             return
         try:
@@ -72,7 +73,7 @@ class JoinReqsBase:
     async def get_user(self, user_id):
         """Retrieve a user from the database."""
         col = self.get_collection()
-        if not col:
+        if col is None:
             return None
         try:
             return await col.find_one({"user_id": int(user_id)})
@@ -83,7 +84,7 @@ class JoinReqsBase:
     async def get_all_users(self):
         """Retrieve all users from the database."""
         col = self.get_collection()
-        if not col:
+        if col is None:
             return []
         try:
             return await col.find().to_list(None)
@@ -94,7 +95,7 @@ class JoinReqsBase:
     async def delete_user(self, user_id):
         """Delete a user from the database."""
         col = self.get_collection()
-        if not col:
+        if col is None:
             return
         try:
             await col.delete_one({"user_id": int(user_id)})
@@ -104,7 +105,7 @@ class JoinReqsBase:
     async def delete_all_users(self):
         """Delete all users from the database."""
         col = self.get_collection()
-        if not col:
+        if col is None:
             return
         try:
             await col.delete_many({})
@@ -114,7 +115,7 @@ class JoinReqsBase:
     async def get_all_users_count(self):
         """Get the count of all users in the database."""
         col = self.get_collection()
-        if not col:
+        if col is None:
             return 0
         try:
             return await col.count_documents({})
@@ -127,8 +128,8 @@ class JoinReqsBase:
         col = self.db["fsub_modes"]
         try:
             doc = await col.find_one({"channel_id": channel_id})
-            # Check if mode exists and is either 'direct' or 'request', else default to 'direct'
             if doc and "mode" in doc:
+                # Ensure the mode is either 'direct' or 'request', default to 'direct'
                 return doc["mode"] if doc["mode"] in ["direct", "request"] else "direct"
             else:
                 return "direct"  # Default to 'direct' if no mode is set
@@ -139,7 +140,7 @@ class JoinReqsBase:
     async def has_join_request(self, user_id, channel_id):
         """Check if the user has requested to join the channel."""
         col = self.get_collection()
-        if not col:
+        if col is None:
             return False
         try:
             request = await col.find_one({"user_id": int(user_id), "channel_id": int(channel_id)})
