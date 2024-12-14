@@ -1,4 +1,5 @@
 import os
+import sys
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode, ChatMemberStatus
@@ -223,7 +224,26 @@ async def set_fsub_mode4(client, message: Message):
 
 #=====================================================================================##
 
-from bot import setup_channel_invite_link  # Import the invite link function
+async def setup_channel_invite_link(client, channel_id, channel_enabled, db_instance, channel_name):
+    if channel_enabled and channel_id:
+        try:
+            mode = await db_instance.get_fsub_mode(channel_id)
+            if mode == "direct":
+                link = (await client.get_chat(channel_id)).invite_link
+                if not link:
+                    await client.export_chat_invite_link(channel_id)
+                    link = (await client.get_chat(channel_id)).invite_link
+                client.LOGGER(__name__).info(f"Direct invite link for {channel_name}: {link}")
+                return link
+            elif mode == "request":
+                link = (await client.create_chat_invite_link(chat_id=channel_id, creates_join_request=True)).invite_link
+                client.LOGGER(__name__).info(f"Join request invite link for {channel_name}: {link}")
+                return link
+        except Exception as e:
+            client.LOGGER(__name__).warning(e)
+            client.LOGGER(__name__).warning(f"Failed to export invite link for {channel_name}!")
+            client.LOGGER(__name__).warning(f"Check {channel_name} ({channel_id}) and ensure the bot is admin with invite permissions.")
+            sys.exit()
 
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
