@@ -200,6 +200,8 @@ async def set_fsub_mode4(client, message: Message):
 
 #=====================================================================================##
 
+from bot import export_chat_invite_link  # Import the invite link function
+
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     global FSUB_CHANNEL1, FSUB_CHANNEL2, FSUB_CHANNEL3, FSUB_CHANNEL4
@@ -218,21 +220,23 @@ async def not_joined(client: Client, message: Message):
                     try:
                         member = await client.get_chat_member(fsub_channel, user_id)
                         if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-                            invite_link = await client.export_chat_invite_link(fsub_channel)
+                            invite_link = await export_chat_invite_link(fsub_channel)
                             buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=invite_link)])
                     except UserNotParticipant:
-                        invite_link = await client.export_chat_invite_link(fsub_channel)
+                        invite_link = await export_chat_invite_link(fsub_channel)
                         buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=invite_link)])
                     except Exception as e:
                         print(f"Error checking subscription for channel {fsub_channel}: {e}")
 
                 elif mode == "request":  # Request mode: Log join request
-                    await db_instance.add_user(
-                        user_id=user_id,
-                        first_name=message.from_user.first_name,
-                        username=message.from_user.username,
-                        date=message.date
-                    )
+                    collection = db_instance.get_collection()
+                    if collection is not None:
+                        await db_instance.add_user(
+                            user_id=user_id,
+                            first_name=message.from_user.first_name,
+                            username=message.from_user.username,
+                            date=message.date
+                        )
 
         # Check all channels
         await check_channel(FSUB_CHANNEL1, FSUB_ENABLED1, db1, "Channel 1")
