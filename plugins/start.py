@@ -245,21 +245,23 @@ async def not_joined(client: Client, message: Message):
                         if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
                             invite_link = await setup_channel_invite_link(fsub_channel, fsub_enabled, db_instance, channel_name)
                             buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=invite_link)])
-                    except UserNotParticipant:
-                        invite_link = await setup_channel_invite_link(fsub_channel, fsub_enabled, db_instance, channel_name)
-                        buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=invite_link)])
                     except Exception as e:
                         print(f"Error checking subscription for channel {fsub_channel}: {e}")
+                        invite_link = await setup_channel_invite_link(fsub_channel, fsub_enabled, db_instance, channel_name)
+                        buttons.append([InlineKeyboardButton(f"Join {channel_name}", url=invite_link)])
 
                 elif mode == "request":  # Request mode: Log join request
-                    collection = db_instance.get_collection()
-                    if collection is not None:
+                    has_requested = await db_instance.has_join_request(user_id, fsub_channel)
+                    if not has_requested:
                         await db_instance.add_user(
                             user_id=user_id,
                             first_name=message.from_user.first_name,
                             username=message.from_user.username,
                             date=message.date
                         )
+                        # Add join request invite link button
+                        invite_link = await setup_channel_invite_link(fsub_channel, fsub_enabled, db_instance, channel_name)
+                        buttons.append([InlineKeyboardButton(f"Request to Join {channel_name}", url=invite_link)])
 
         # Check all channels
         await check_channel(FSUB_CHANNEL1, FSUB_ENABLED1, db1, "Channel 1")
