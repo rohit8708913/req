@@ -31,8 +31,6 @@ async def del_user(user_id: int):
     return
 
 
-
-
 class JoinReqsBase:
     """Base class for all channel join request databases."""
     def __init__(self, db_name: str):
